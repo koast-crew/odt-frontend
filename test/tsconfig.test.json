@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "allowJs": true,
+    "types": ["jest", "jest-rtl"],
+    "jsx": "react-jsx",
+    "paths": {
+      "*": ["./src/*.d.ts"]
+    },
+  },
+}

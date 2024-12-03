@@ -1,0 +1,18 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "jsdom",
+  "moduleNameMapper": {
+    "\\.(css|less|sass|scss)$": "identity-obj-proxy"
+  },
+  "transform": {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {"tsconfig": "./test/tsconfig.test.json"}
+    ]
+  },
+  "verbose": false,
+  "reporters": [
+    ["./test/reporter.js", {}]
+  ],
+  "testSequencer": "./test/sequencer.js"
+}
