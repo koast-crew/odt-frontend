@@ -2,6 +2,7 @@ import React from 'react';
 import { Viewer } from 'cesium';
 import CesiumMap, { CesiumMapProps } from './components/map/CesiumMap';
 import PlayBar from './components/map/PlayBar';
+import LeftHeaderTable from './components/LeftHeaderTable';
 import { baseGridWMS, testWMS, GetFeatureInfoOptions } from './consts/mapConstants';
 import dayjs from 'dayjs';
 import { fishInfoApi } from './api';
@@ -15,8 +16,18 @@ function App() {
   const [playbarIndex, setPlayBarIndex] = React.useState(0);
   const [maxFishQuery, setMaxFishQuery] = React.useState({ species: 'squid', analysDate: dayjs().format('YYYYMMDD'), sea: 'west' });
 
-  const { data, error, isLoading } = fishInfoApi.endpoints.getMaxFishPointInfo.useQuery(maxFishQuery);
-  console.log(data, error, isLoading);
+  const {
+    data: maxFishInfo, error: maxFishInfoError, isLoading: maxFishInfoIsLoading,
+  } = fishInfoApi.endpoints.getMaxFishPointInfo.useQuery(maxFishQuery);
+  console.log(maxFishInfoError, maxFishInfoIsLoading);
+  const maxFishTableContent = React.useMemo(() => maxFishInfo ? [
+    maxFishInfo.payload.map((mfi) => [dayjs(mfi.analysDate).format('MM-DD')]),
+    maxFishInfo.payload.map((mfi) => [mfi.predictCatch]),
+    maxFishInfo.payload.map((mfi) => [mfi.sst]),
+    maxFishInfo.payload.map((mfi) => [mfi.wave]),
+    maxFishInfo.payload.map((mfi) => [mfi.ssh]),
+    maxFishInfo.payload.map((mfi) => [mfi.chl]),
+  ] : [], [maxFishInfo]);
 
   const handleMapOnClick = async (viewer: Viewer, position: { lon: number, lat: number }) => {
     const { lon, lat } = position;
@@ -86,7 +97,7 @@ function App() {
 
   return (
     <div id={'app'} className={'relative grid h-screen w-screen grid-cols-[60px,_350px,_1fr] grid-rows-[55px,_1fr] overflow-hidden'}>
-      <div className={'col-span-3 grid size-full grid-cols-[55px,_180px,_1fr] bg-slate-800'}>
+      <div className={'z-50 col-span-3 grid size-full grid-cols-[55px,_180px,_1fr] bg-slate-800'}>
         <div className={'m-1'}>
           <img src={'/ci_koast.png'} className={'size-full'} />
         </div>
@@ -120,6 +131,25 @@ function App() {
             <button onClick={() => handleOnSelectSea('east')} className={'h-6 w-full rounded-md text-[13px] text-zinc-50' + (maxFishQuery.sea === 'east' ? ' bg-orange-500' : ' bg-zinc-500')}>{'동해'}</button>
           </div>
         </div>
+        <div className={'flex h-8 w-full items-center justify-center text-[14px] font-bold'}>{'예측 어획량 최대 지점'}</div>
+        <div className={'grid h-28 w-full grid-cols-[100px,_1fr] place-items-center gap-px bg-zinc-300 text-[13px]'}>
+          <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'날짜'}</div>
+          <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload[0].analysDate}</div>
+          <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'격자 아이디'}</div>
+          <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload[0].gridId}</div>
+          <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'위경도'}</div>
+          <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload[0].latDms}{', '}{maxFishInfo?.payload[0].lonDms}</div>
+          <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'예측 어획량'}</div>
+          <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload[0].predictCatch}</div>
+        </div>
+        <div className={'flex h-8 w-full items-center justify-center text-[14px] font-bold'}>{'향후 3일 조회'}</div>
+        {React.useMemo(() => (
+          <LeftHeaderTable
+            leftHeader={[['날짜'], ['어획량(t)'], ['수온(℃)'], ['파고(m)'], ['수위(m)'], ['클로로필', '(mg/㎥)']]}
+            tableContent={maxFishTableContent}
+            isFirstRowHeader
+          />
+        ), [maxFishTableContent])}
       </div>
       <div className={'relative flex size-full max-h-full min-w-[720px]'}>
         <CesiumMap

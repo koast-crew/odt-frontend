@@ -18,7 +18,7 @@ export const fishInfoApi = createApi({
   reducerPath: 'fishInfoApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/catch/max' }),
   endpoints: (builder) => ({
-    getMaxFishPointInfo: builder.query<ResultResponse<FishInfo>, { species: string, analysDate: string, sea: string }>({
+    getMaxFishPointInfo: builder.query<ResultResponse<Array<FishInfo>>, { species: string, analysDate: string, sea: string }>({
       query: ({ species, analysDate, sea }) => {
         return {
           url: '',
