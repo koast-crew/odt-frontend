@@ -9,7 +9,7 @@ export interface CesiumMapProps {
   baseWMSLayers?: Array<Cesium.WebMapServiceImageryProvider.ConstructorOptions>
   wmsLayers?: Array<Cesium.WebMapServiceImageryProvider.ConstructorOptions>
   onClick?: (viewer: Cesium.Viewer, clickPosition: { lon: number, lat: number })=> void;
-  overlays?: Array<{ id: string, position: { lon: number, lat: number }, displayValue?: number, gridId?: string, entity?: Cesium.Entity.ConstructorOptions }>
+  overlays?: Array<{ id: string, position: { lon: number, lat: number }, displayValue?: number, gridId?: string, species?: string, time?: string, entity?: Cesium.Entity.ConstructorOptions }>
   onCloseOverlay?: (id: string)=> void
 }
 

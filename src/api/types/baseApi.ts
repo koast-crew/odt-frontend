@@ -1,4 +1,4 @@
 export type ResultResponse<T> = {
-  payload: T
+  payload: T | undefined | null
   status: number
 };
