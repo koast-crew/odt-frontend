@@ -1,14 +1,22 @@
-// import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
+import { Suspense } from 'react';
+import * as ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { store } from './store/index.ts';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-createRoot(document.getElementById('root')!).render(
-  // <StrictMode>
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  // </StrictMode>,
+import { routes } from './router';
+import { store } from './store';
+import './index.css';
+import './assets/font/font.css';
+import Spinner from './components/Spinner';
+
+const router = createBrowserRouter(routes);
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  // <React.StrictMode>
+  <Suspense fallback={<div className={'flex size-full items-center justify-center'}><Spinner /></div>}>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </Suspense>,
+  // </React.StrictMode>,
 );

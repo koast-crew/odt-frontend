@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { GetFeatureInfoOptions } from '../consts/mapConstants';
+import { GetFeatureInfoOptions } from '../utils/consts/mapConstants';
 
 interface wmsPointInfo {
   features: Array<{ properties: {

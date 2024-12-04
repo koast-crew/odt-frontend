@@ -5,6 +5,11 @@ import cesium from 'vite-plugin-cesium';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), cesium()],
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
   server: {
     proxy: {
       '/geo-proxy': {

@@ -1,5 +1,7 @@
 import { CesiumMapProps } from './CesiumMap';
-import { fishInfoApi } from '../../api';
+import { fishInfoApi } from '@/api';
+import { MapPin } from 'lucide-react';
+import Spinner from '../Spinner';
 
 interface OverlayProps {
   overlays: CesiumMapProps['overlays']
@@ -57,15 +59,14 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
       <div className={'grid size-full grid-cols-1 grid-rows-[1rem,_2.5rem,_1fr,_1.5rem] place-items-center text-xs'}>
         <div className={'font-bold'}>{gridId ?? '임의 지점'}</div>
         <div className={'grid size-full grid-cols-[3rem,_1fr] grid-rows-2 place-items-center'}>
-          <svg className={'row-span-2 size-4 fill-zinc-600'} xmlns={'http://www.w3.org/2000/svg'} viewBox={'0 0 384 512'}>
-            <path d={'M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z'} />
-          </svg>
+          <MapPin className={'row-span-2 size-5 fill-zinc-600 stroke-zinc-50'} />
           <div className={'self-end justify-self-start'}>{convertDMS(lon, lat).lon}</div>
           <div className={'self-start justify-self-start'}>{convertDMS(lon, lat).lat}</div>
         </div>
-        <div className={'grid size-full grid-cols-[1fr,_1fr] place-items-center px-[3px]'}>
+        <div className={'grid size-full grid-cols-[0.7fr,_1fr] place-items-center px-[3px]'}>
           {payload && !error && !isLoading ? (
-            <><div className={'text-[12px] font-bold'}>{'어획량'}</div>
+            <>
+              <div className={'text-[12px] font-bold'}>{'어획량'}</div>
               <div style={{ backgroundColor: getFishCatchColor(predictCatch) }} className={'flex w-full items-center justify-center rounded-full bg-slate-600 py-1 font-bold text-zinc-50'}>{predictCatch ?? '-'}{' t'}</div>
               <div className={'text-[12px] font-bold'}>{'파고'}</div>
               <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold text-zinc-700'}>
@@ -88,7 +89,7 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
                 <div className={'pl-1 text-[10px] font-bold'}>{'㎎/㎥'}</div>
               </div>
             </>
-          ) : isLoading ? <div className={'loader col-span-2 flex w-1/2 justify-center text-[13px] font-bold'} /> : <div className={'col-span-2 flex w-full justify-center text-[13px] font-bold'}>{'데이터가 없습니다.'}</div>}
+          ) : isLoading ? <Spinner className={'col-span-2 flex w-[25px] justify-center text-[13px] font-bold'} /> : <div className={'col-span-2 flex w-full justify-center text-[13px] font-bold'}>{'데이터가 없습니다.'}</div>}
         </div>
         <button onClick={() => onCloseOverlay?.(id)} className={'flex h-5 w-16 items-center justify-center rounded-sm bg-zinc-500 text-xs text-zinc-50'}>{'닫기'}</button>
       </div>

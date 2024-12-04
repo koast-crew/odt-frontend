@@ -25,8 +25,8 @@ export default function Table(props: TableProps) {
     }
   }).flat();
 
-  const headerStyle = 'flex size-full items-center justify-center bg-zinc-100 py-[3px] font-bold flex-col';
-  const contentStyle = 'flex size-full items-center justify-center bg-white py-[3px] flex-col';
+  const headerStyle = 'flex size-full items-center justify-center bg-zinc-100 py-[3px] font-bold text-[13px] flex-col';
+  const contentStyle = 'flex size-full items-center justify-center bg-white py-[3px] text-[13px] flex-col';
 
   return (
     <div style={{ gridTemplateColumns: `75px repeat(${ cols }, 1fr)` }} className={'grid place-items-center gap-px border-y border-zinc-300 bg-zinc-300 text-[14px]'}>
