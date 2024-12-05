@@ -5,7 +5,7 @@ function Header() {
       <div className={'m-1'}>
         <img src={'/ci_koast.png'} className={'size-full'} />
       </div>
-      <div className={'flex items-center justify-center text-[20px] font-bold text-zinc-50'}>{'한국해양기상기술'}</div>
+      <div className={'flex items-center justify-center text-[20px] font-bold text-light'}>{'한국해양기상기술'}</div>
     </div>
   );
 }

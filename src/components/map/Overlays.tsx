@@ -54,7 +54,7 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
     <div
       id={id}
       key={id}
-      className={(payload && !error && !isLoading ? 'h-56 ' : 'h-36 ') + 'absolute z-10 flex w-36 items-center justify-center rounded-sm bg-zinc-50 p-1 text-sm text-zinc-600 shadow-md shadow-zinc-600 after:absolute after:-bottom-3 after:h-3 after:w-4 after:border-x-[1rem] after:border-t-[0.75rem] after:border-x-transparent after:border-t-zinc-50'}
+      className={(payload && !error && !isLoading ? 'h-56 ' : 'h-36 ') + 'absolute z-10 flex w-36 items-center justify-center rounded-sm bg-zinc-50 p-1 text-sm shadow-md shadow-zinc-600 after:absolute after:-bottom-3 after:h-3 after:w-4 after:border-x-[1rem] after:border-t-[0.75rem] after:border-x-transparent after:border-t-zinc-50'}
     >
       <div className={'grid size-full grid-cols-1 grid-rows-[1rem,_2.5rem,_1fr,_1.5rem] place-items-center text-xs'}>
         <div className={'font-bold'}>{gridId ?? '임의 지점'}</div>
@@ -67,31 +67,31 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
           {payload && !error && !isLoading ? (
             <>
               <div className={'text-[12px] font-bold'}>{'어획량'}</div>
-              <div style={{ backgroundColor: getFishCatchColor(predictCatch) }} className={'flex w-full items-center justify-center rounded-full bg-slate-600 py-1 font-bold text-zinc-50'}>{predictCatch ?? '-'}{' t'}</div>
+              <div style={{ backgroundColor: getFishCatchColor(predictCatch) }} className={'flex w-full items-center justify-center rounded-full bg-slate-600 py-1 font-bold text-light'}>{predictCatch ?? '-'}{' t'}</div>
               <div className={'text-[12px] font-bold'}>{'파고'}</div>
-              <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold text-zinc-700'}>
+              <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold'}>
                 {wave?.toFixed(2) ?? '-'}
                 <div className={'pl-1 text-[10px] font-bold'}>{'m'}</div>
               </div>
               <div className={'text-[12px] font-bold'}>{'수위'}</div>
-              <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold text-zinc-700'}>
+              <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold'}>
                 {ssh?.toFixed(2) ?? '-'}
                 <div className={'pl-1 text-[10px] font-bold'}>{'m'}</div>
               </div>
               <div className={'text-[12px] font-bold'}>{'수온'}</div>
-              <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold text-zinc-700'}>
+              <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold'}>
                 {sst?.toFixed(2) ?? '-'}
                 <div className={'pl-1 text-[10px] font-bold'}>{'℃'}</div>
               </div>
               <div className={'text-[12px] font-bold'}>{'클로로필'}</div>
-              <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold text-zinc-700'}>
+              <div className={'flex w-full items-center justify-center rounded-full bg-zinc-300 py-1 font-bold'}>
                 {chl?.toFixed(2) ?? '-'}
                 <div className={'pl-1 text-[10px] font-bold'}>{'㎎/㎥'}</div>
               </div>
             </>
           ) : isLoading ? <Spinner className={'col-span-2 flex w-[25px] justify-center text-[13px] font-bold'} /> : <div className={'col-span-2 flex w-full justify-center text-[13px] font-bold'}>{'데이터가 없습니다.'}</div>}
         </div>
-        <button onClick={() => onCloseOverlay?.(id)} className={'flex h-5 w-16 items-center justify-center rounded-sm bg-zinc-500 text-xs text-zinc-50'}>{'닫기'}</button>
+        <button onClick={() => onCloseOverlay?.(id)} className={'flex h-5 w-16 items-center justify-center rounded-sm bg-zinc-500 text-xs text-light'}>{'닫기'}</button>
       </div>
     </div>
   );
