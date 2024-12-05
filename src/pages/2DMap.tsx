@@ -3,7 +3,7 @@ import { Viewer } from 'cesium';
 import CesiumMap, { CesiumMapProps } from '@/components/map/CesiumMap';
 import PlayBar from '@/components/map/PlayBar';
 import LeftHeaderTable from '@/components/LeftHeaderTable';
-import { baseGridWMS, testWMS } from '@/utils/consts/mapConstants';
+import { baseGridWMS } from '@/utils/consts/mapConstants';
 import dayjs from 'dayjs';
 import { fishInfoApi } from '@/api';
 
@@ -56,7 +56,7 @@ function Main() {
     setMaxFishQuery((mfq) => ({ ...mfq, sea }));
   };
   const wmsLayers = React.useMemo(() => {
-    return [{ ...testWMS, ...{ parameters: { ...testWMS.parameters, viewparams: 'ctsh_rprt_ymd:' + timeList[playbarIndex] } } }];
+    return [{ ...baseGridWMS, ...{ parameters: { ...baseGridWMS.parameters, viewparams: 'ctsh_rprt_ymd:' + timeList[playbarIndex] } } }];
   }, [playbarIndex, timeList]);
 
   React.useEffect(() => {
