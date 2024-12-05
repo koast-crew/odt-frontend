@@ -18,8 +18,8 @@ function ToolBar(props: ToolBarProps) {
         <button
           onClick={() => handleOnClickLayer('grid')}
           className={
-            'flex h-11 w-full flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-zinc-50'
-            + (selectedLayers.includes('grid') ? ' bg-orange-500' : ' bg-zinc-500')
+            'flex h-11 w-full flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-light'
+            + (selectedLayers.includes('grid') ? ' bg-orange' : ' bg-zinc-500')
           }
         >
           <Grid className={'size-4'} />
@@ -28,8 +28,8 @@ function ToolBar(props: ToolBarProps) {
         <button
           onClick={() => handleOnClickLayer('fish')}
           className={
-            'flex h-11 w-full flex-col items-center justify-center rounded-b-md text-[11px] text-zinc-50'
-            + (selectedLayers.includes('fish') ? ' bg-orange-500' : ' bg-zinc-500')
+            'flex h-11 w-full flex-col items-center justify-center rounded-b-md text-[11px] text-light'
+            + (selectedLayers.includes('fish') ? ' bg-orange' : ' bg-zinc-500')
           }
         >
           <Fish className={'size-4'} />
@@ -38,32 +38,32 @@ function ToolBar(props: ToolBarProps) {
       </div>
       <div className={'mt-2 flex flex-col rounded-md bg-zinc-700 shadow-md shadow-zinc-900'}>
         <button onClick={() => handleOnClickLayer('sst')} className={
-          'flex h-11 w-full flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-zinc-50'
-          + (selectedLayers.includes('sst') ? ' bg-orange-500' : ' bg-zinc-500')
+          'flex h-11 w-full flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-light'
+          + (selectedLayers.includes('sst') ? ' bg-orange' : ' bg-zinc-500')
         }
         >
           <Thermometer className={'size-4'} />
           <div className={'flex items-center justify-center'}>{'수온'}</div>
         </button>
         <button onClick={() => handleOnClickLayer('wave')} className={
-          'flex h-11 w-full flex-col items-center justify-center border-b border-zinc-400 text-[11px] text-zinc-50'
-          + (selectedLayers.includes('wave') ? ' bg-orange-500' : ' bg-zinc-500')
+          'flex h-11 w-full flex-col items-center justify-center border-b border-zinc-400 text-[11px] text-light'
+          + (selectedLayers.includes('wave') ? ' bg-orange' : ' bg-zinc-500')
         }
         >
           <Waves className={'size-4'} />
           <div className={'flex items-center justify-center'}>{'파고'}</div>
         </button>
         <button onClick={() => handleOnClickLayer('ssh')} className={
-          'flex h-11 w-full flex-col items-center justify-center border-b border-zinc-400 text-[11px] text-zinc-50'
-          + (selectedLayers.includes('ssh') ? ' bg-orange-500' : ' bg-zinc-500')
+          'flex h-11 w-full flex-col items-center justify-center border-b border-zinc-400 text-[11px] text-light'
+          + (selectedLayers.includes('ssh') ? ' bg-orange' : ' bg-zinc-500')
         }
         >
           <ArrowUpFromDot className={'size-4'} />
           <div className={'flex items-center justify-center'}>{'수위'}</div>
         </button>
         <button onClick={() => handleOnClickLayer('chl')} className={
-          'flex h-11 w-full flex-col items-center justify-center rounded-b-md text-[9px] text-zinc-50'
-          + (selectedLayers.includes('chl') ? ' bg-orange-500' : ' bg-zinc-500')
+          'flex h-11 w-full flex-col items-center justify-center rounded-b-md text-[9px] text-light'
+          + (selectedLayers.includes('chl') ? ' bg-orange' : ' bg-zinc-500')
         }
         >
           <Leaf className={'size-4'} />

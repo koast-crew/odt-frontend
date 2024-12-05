@@ -40,25 +40,25 @@ export default function PlayBar(props: PlayBarProps) {
             <div className={'relative grid size-full grid-cols-[8rem,_1fr] grid-rows-[6px,_1fr] place-items-center gap-1'}>
               <div />
               <div style={{ width: `${ (timeList.length - 1) / timeList.length * 100 }%` }} className={'relative h-full rounded-full bg-zinc-700 shadow-md shadow-zinc-900'}>
-                <div style={{ width: `${ (index) / (timeList.length - 1) * 100 }%` }} className={'h-full rounded-full ' + (hoverIndex > 0 && hoverIndex < index ? 'bg-orange-400/50' : 'bg-orange-400')} />
+                <div style={{ width: `${ (index) / (timeList.length - 1) * 100 }%` }} className={'h-full rounded-full ' + (hoverIndex > 0 && hoverIndex < index ? 'bg-orange opacity-50' : 'bg-orange')} />
                 {
                   hoverIndex > 0
-                  && <div style={{ width: `${ (hoverIndex) / (timeList.length - 1) * 100 }%` }} className={'left-0 -mt-1.5 h-full rounded-full ' + (hoverIndex > 0 && hoverIndex < index ? 'bg-orange-400' : 'bg-orange-400/50')} />
+                  && <div style={{ width: `${ (hoverIndex) / (timeList.length - 1) * 100 }%` }} className={'left-0 -mt-1.5 h-full rounded-full ' + (hoverIndex > 0 && hoverIndex < index ? 'bg-orange opacity-50' : 'bg-orange opacity-50')} />
                 }
               </div>
               <div className={'flex items-center justify-center'}>
                 <button onClick={() => onChange?.(index - 1 >= 0 ? index - 1 : 0)} className={'mx-0.5 flex size-8 items-center justify-center rounded-full bg-zinc-700 shadow-md shadow-zinc-900'}>
-                  <ChevronLeft className={'text-zinc-50'} width={'20'} height={'20'} />
+                  <ChevronLeft className={'text-light'} width={'20'} height={'20'} />
                 </button>
                 <button onClick={() => {setIsPlaying((ip) => !ip);}} className={'mx-0.5 flex size-10 items-center justify-center rounded-full bg-zinc-700 shadow-md shadow-zinc-900'}>
                   {!isPlaying ? (
-                    <Play className={'fill-current text-zinc-50'} width={'20'} height={'20'} />
+                    <Play className={'fill-current text-light'} width={'20'} height={'20'} />
                   ) : (
-                    <Pause className={'fill-current text-zinc-50'} width={'20'} height={'20'} />
+                    <Pause className={'fill-current text-light'} width={'20'} height={'20'} />
                   )}
                 </button>
                 <button onClick={() => onChange?.(index + 1 <= timeList.length - 1 ? index + 1 : index)} className={'mx-0.5 flex size-8 items-center justify-center rounded-full bg-zinc-700 shadow-md shadow-zinc-900'}>
-                  <ChevronRight className={'text-zinc-50'} width={'20'} height={'20'} />
+                  <ChevronRight className={'text-light'} width={'20'} height={'20'} />
                 </button>
               </div>
               <div className={'flex size-full rounded-full bg-zinc-700 shadow-md shadow-zinc-900'}>
@@ -71,7 +71,7 @@ export default function PlayBar(props: PlayBarProps) {
                         onMouseEnter={() => setHoverIndex(index)}
                         onMouseLeave={() => setHoverIndex(-1)}
                         style={{ width: `${ 100 / timeList.length }%` }}
-                        className={'flex flex-col items-center justify-between text-sm text-zinc-50'}
+                        className={'flex flex-col items-center justify-between text-sm text-light'}
                       >
                         <div className={'h-3 w-[4px] rounded-full bg-zinc-50'} />
                         <div className={'py-1 text-[13px] font-bold'}>
