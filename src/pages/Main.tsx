@@ -3,17 +3,16 @@ import { Viewer } from 'cesium';
 import CesiumMap, { CesiumMapProps } from '@/components/map/CesiumMap';
 import PlayBar from '@/components/map/PlayBar';
 import LeftHeaderTable from '@/components/LeftHeaderTable';
-import { baseGridWMS, testWMS } from '@/utils/consts/mapConstants';
 import dayjs from 'dayjs';
 import { Chart } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { fishInfoApi } from '@/api';
 import Spinner from '@/components/Spinner';
 import { MapPin } from 'lucide-react';
+import ToolBar from '@/components/map/ToolBar';
+import { makeWms } from '@/utils/makeWms';
 
 ChartJS.register(...registerables);
-
-const baseWMSLayers = [baseGridWMS];
 
 interface MaxFishQuery {
   species: string
@@ -167,17 +166,21 @@ function Reanalysis(props: ReanalysisProps) {
       </div>
       {data && !error && !isLoading ? (
         <>
+          <div className={'mt-2 flex h-8 w-full items-center justify-center text-[14px] font-bold'}>{'과거 관측 재분석 자료'}</div>
           <Chart className={'mt-2'} height={200} type={'line'} options={chartOptions} data={chartData} />
           <div className={'flex h-8 w-full items-center justify-center text-[11px] font-bold text-zinc-400'}>{'단위: 100만 톤'}</div>
-          <div className={'flex h-8 w-full items-center justify-center text-[14px] font-bold'}>{dayjs(reanalysisQuery.analysDate).format('YYYY년 MM월') + ' 최대 어획량 예측 지점 순위'}</div>
+          <div className={'mt-2 flex h-8 w-full items-center justify-center text-[14px] font-bold'}>{dayjs(reanalysisQuery.analysDate).format('YYYY년 MM월') + ' 최대 어획량 예측 지점 순위'}</div>
           {
             locations?.map((l) => (
-              <div key={l.gridId} className={'mt-2 flex h-12 w-full flex-col items-center justify-center rounded-md border border-zinc-300 p-1 text-[12px] font-bold text-zinc-400 shadow-sm shadow-zinc-200'}>
+              <div key={l.gridId} className={'mt-2 flex h-16 w-full flex-col items-center justify-center rounded-md border border-zinc-300 p-1 text-[12px] font-bold text-zinc-400 shadow-sm shadow-zinc-200'}>
                 <div className={'flex items-center justify-center'}><MapPin className={'size-4 fill-zinc-400 stroke-zinc-300'} />
-                  <div className={'flex items-center justify-center'}>{`${ l.gridId } (${ l.latitude }, ${ l.longitude })`}</div>
+                  <div className={'flex items-center justify-center'}>{l.gridId}</div>
                 </div>
-                <div className={'flex items-center justify-center text-[13px] font-bold text-zinc-500'}>
-                  <div className={'flex items-center justify-center'}>{`어획량: ${ l.totalCatch.toFixed(2) } 톤`}</div>
+                <div className={'grid grid-cols-[50px,_1fr]'}>
+                  <div className={'flex items-center justify-center text-[13px] font-bold text-zinc-500'}>{'위치'}</div>
+                  <div className={'flex items-center justify-center text-[13px] font-bold text-zinc-500'}>{`${ l.latDms }, ${ l.lonDms }`}</div>
+                  <div className={'flex items-center justify-center text-[13px] font-bold text-zinc-500'}>{'어획량'}</div>
+                  <div className={'flex items-center justify-center text-[13px] font-bold text-zinc-500'}>{`${ l.totalCatch.toFixed(2) } 톤`}</div>
                 </div>
               </div>
             ))
@@ -198,7 +201,7 @@ function Main() {
   const [maxFishQuery, setMaxFishQuery] = React.useState({ species: 'squid', analysDate: dayjs().format('YYYYMMDD'), sea: 'west' });
   const [reanalysisQuery, setReanalysisQuery] = React.useState({ species: 'squid', analysDate: dayjs().format('YYYYMMDD') });
   const [tab, setTab] = React.useState<'dailyFish' | 'reanalysis'>('dailyFish');
-
+  const [selectedLayers, setSelectedLayers] = React.useState<string[]>(['grid', 'fish']);
   const timeList = React.useMemo(
     () => [0, 1, 2, 3].map((d) => dayjs(tab === 'dailyFish' ? maxFishQuery.analysDate : reanalysisQuery.analysDate).add(d, 'day').format('YYYY-MM-DD')),
     [tab, maxFishQuery, reanalysisQuery],
@@ -220,9 +223,10 @@ function Main() {
     });
   };
   const handleOnChangePlayBar = React.useCallback((index: number) => {setPlayBarIndex(index);}, []);
+  const handleOnChangeSelectedLayers = React.useCallback((layers: string[]) => {setSelectedLayers(layers);}, []);
   const wmsLayers = React.useMemo(() => {
-    return [{ ...testWMS, ...{ parameters: { ...testWMS.parameters, viewparams: 'ctsh_rprt_ymd:' + timeList[playbarIndex] } } }];
-  }, [playbarIndex, timeList]);
+    return selectedLayers.map((layer) => makeWms(layer, timeList[playbarIndex]));
+  }, [playbarIndex, timeList, selectedLayers]);
 
   React.useEffect(() => {
     setOverlays((ol) => ol.map((item) => ({ ...item, time: timeList[playbarIndex] })));
@@ -239,7 +243,6 @@ function Main() {
       </div>
       <div className={'relative flex size-full max-h-full min-w-[720px]'}>
         <CesiumMap
-          baseWMSLayers={baseWMSLayers}
           wmsLayers={wmsLayers}
           onClick={handleMapOnClick}
           overlays={overlays}
@@ -248,6 +251,7 @@ function Main() {
         <div className={'absolute bottom-0 flex h-14 w-full items-center justify-center px-[10%]'}>
           {React.useMemo(() => <PlayBar timeList={timeList} index={playbarIndex} onChange={handleOnChangePlayBar} />, [playbarIndex, timeList, handleOnChangePlayBar])}
         </div>
+        <ToolBar selectedLayers={selectedLayers} onChangeSelectedLayers={handleOnChangeSelectedLayers} />
       </div>
     </>
   );

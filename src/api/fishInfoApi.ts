@@ -37,6 +37,8 @@ export interface ReanalysisInfo {
     gridId: string
     latitude: number
     longitude: number
+    latDms: string
+    lonDms: string
     region: string
   }>
 }

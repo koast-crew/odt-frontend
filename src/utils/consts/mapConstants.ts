@@ -23,7 +23,7 @@ export const baseGridWMS = {
   },
 };
 
-export const testWMS = {
+export const baseWMS = {
   url: '/geo-proxy',
   layers: 'mdtwin:catch_predict_view',
   parameters: {
