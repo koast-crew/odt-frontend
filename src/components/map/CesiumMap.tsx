@@ -11,6 +11,8 @@ export interface CesiumMapProps {
   onClick?: (viewer: Cesium.Viewer, clickPosition: { lon: number, lat: number })=> void;
   overlays?: Array<{ id: string, position: { lon: number, lat: number }, displayValue?: number, gridId?: string, species?: string, time?: string, entity?: Cesium.Entity.ConstructorOptions }>
   onCloseOverlay?: (id: string)=> void
+  zoomLevel?: number
+  onZoomLevelChange?: (level: number)=> void
 }
 
 class CustomViewer extends Cesium.Viewer {
@@ -77,6 +79,7 @@ function CesiumMap(props: CesiumMapProps) {
     onClick,
     overlays = [],
     onCloseOverlay,
+    onZoomLevelChange,
   } = props;
   const viewer = React.useRef<CustomViewer>();
 
@@ -88,6 +91,16 @@ function CesiumMap(props: CesiumMapProps) {
     () => baseWMSLayers.map((layerOptions) => new Cesium.WebMapServiceImageryProvider(layerOptions)),
     [baseWMSLayers],
   );
+
+  const setZoomWithForce = (height: number) => {
+    if (!viewer.current) return;
+    const minHeight = 50010;
+    const maxHeight = 3450000;
+    const { longitude, latitude } = viewer.current.camera.positionCartographic;
+    viewer.current.camera.setView({
+      destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height > maxHeight ? maxHeight : height < minHeight ? minHeight : height), // 경도, 위도, 높이
+    });
+  };
 
   React.useEffect(() => {
     Cesium.Ion.defaultAccessToken = import.meta.env.VITE_ION_TOKEN ?? '';
@@ -130,6 +143,8 @@ function CesiumMap(props: CesiumMapProps) {
 
     const postRenderListener = () => {
       if (!viewer.current) return;
+
+      console.log(viewer.current.camera.positionCartographic.height);
 
       overlays.map(({ id, position: { lon, lat } }) => {
         if (!viewer.current) return;

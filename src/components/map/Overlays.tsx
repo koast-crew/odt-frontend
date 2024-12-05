@@ -2,6 +2,7 @@ import { CesiumMapProps } from './CesiumMap';
 import { fishInfoApi } from '@/api';
 import { MapPin } from 'lucide-react';
 import Spinner from '../Spinner';
+import dayjs from 'dayjs';
 
 interface OverlayProps {
   overlays: CesiumMapProps['overlays']
@@ -47,7 +48,7 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
     id, position: { lon, lat }, time, species, onCloseOverlay,
   } = props;
 
-  const { data, error, isLoading } = fishInfoApi.endpoints.getPointInfo.useQuery({ lon, lat, analysDate: time ?? '', species: species ?? '' });
+  const { data, error, isLoading } = fishInfoApi.endpoints.getPointInfo.useQuery({ lon, lat, analysDate: dayjs(time ?? '').format('YYYYMMDD'), species: species ?? '' });
   const { payload } = data ?? { payload: null };
   const { gridId, predictCatch, ssh, sst, wave, chl } = payload ?? { gridId: null, predictCatch: null, wave: null, ssh: null, sst: null, chl: null };
   return (

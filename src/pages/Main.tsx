@@ -202,6 +202,8 @@ function Main() {
   const [reanalysisQuery, setReanalysisQuery] = React.useState({ species: 'squid', analysDate: dayjs().format('YYYYMMDD') });
   const [tab, setTab] = React.useState<'dailyFish' | 'reanalysis'>('dailyFish');
   const [selectedLayers, setSelectedLayers] = React.useState<string[]>(['grid', 'fish']);
+  const [zoomLevel, setZoomLevel] = React.useState(50);
+
   const timeList = React.useMemo(
     () => [0, 1, 2, 3].map((d) => dayjs(tab === 'dailyFish' ? maxFishQuery.analysDate : reanalysisQuery.analysDate).add(d, 'day').format('YYYY-MM-DD')),
     [tab, maxFishQuery, reanalysisQuery],
@@ -251,7 +253,7 @@ function Main() {
         <div className={'absolute bottom-0 flex h-14 w-full items-center justify-center px-[10%]'}>
           {React.useMemo(() => <PlayBar timeList={timeList} index={playbarIndex} onChange={handleOnChangePlayBar} />, [playbarIndex, timeList, handleOnChangePlayBar])}
         </div>
-        <ToolBar selectedLayers={selectedLayers} onChangeSelectedLayers={handleOnChangeSelectedLayers} />
+        <ToolBar selectedLayers={selectedLayers} onChangeSelectedLayers={handleOnChangeSelectedLayers} zoomLevel={zoomLevel} onChangeZoomLevel={setZoomLevel} />
       </div>
     </>
   );
