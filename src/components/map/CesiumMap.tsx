@@ -13,6 +13,31 @@ export interface CesiumMapProps {
   onCloseOverlay?: (id: string)=> void
 }
 
+class CustomViewer extends Cesium.Viewer {
+  constructor(id: string | Element, options?: Cesium.Viewer.ConstructorOptions) {
+    super(id, options);
+  }
+  customImageryLayers: Array<CustomImageryLayer> = [];
+  addCustomLayer(layer: CustomImageryLayer) {
+    this.customImageryLayers.push(layer);
+    this.imageryLayers.add(layer);
+  }
+  removeCustomLayer(layer: CustomImageryLayer) {
+    this.customImageryLayers = this.customImageryLayers.filter((l) => l !== layer);
+    this.imageryLayers.remove(layer);
+  }
+}
+
+class CustomImageryLayer extends Cesium.ImageryLayer {
+  constructor(provider?: Cesium.ImageryProvider, options?: Cesium.ImageryLayer.ConstructorOptions, value?: { id: string }) {
+    super(provider, options);
+    this.value = value;
+  }
+  value?: {
+    id: string;
+  };
+}
+
 const mapViewerOptions = {
   // terrain: Cesium.Terrain.fromWorldTerrain(),
   animation: false, // Disable the animation widget
@@ -53,7 +78,7 @@ function CesiumMap(props: CesiumMapProps) {
     overlays = [],
     onCloseOverlay,
   } = props;
-  const viewer = React.useRef<Cesium.Viewer>();
+  const viewer = React.useRef<CustomViewer>();
 
   const baseUrlLayerProviders = React.useMemo(
     () => baseUrlLayers.map((layerOptions) => new Cesium.UrlTemplateImageryProvider({ ...layerOptions, ...customUrlOptions })),
@@ -63,16 +88,11 @@ function CesiumMap(props: CesiumMapProps) {
     () => baseWMSLayers.map((layerOptions) => new Cesium.WebMapServiceImageryProvider(layerOptions)),
     [baseWMSLayers],
   );
-  const wmsLayerProviders = React.useMemo(
-    () => wmsLayers.map((layerOptions) => new Cesium.WebMapServiceImageryProvider(layerOptions)),
-    [wmsLayers],
-  );
-  // const { data, error, isLoading } = wmsPointInfoApi.endpoints.getPointInfo.useQuery({ lon: 0, lat: 0 });
 
   React.useEffect(() => {
     Cesium.Ion.defaultAccessToken = import.meta.env.VITE_ION_TOKEN ?? '';
 
-    viewer.current = new Cesium.Viewer('cesiumContainer', { ...mapViewerOptions });
+    viewer.current = new CustomViewer('cesiumContainer', { ...mapViewerOptions });
     if (!viewer.current) return;
 
     viewer.current.camera.setView({
@@ -165,9 +185,11 @@ function CesiumMap(props: CesiumMapProps) {
   }, [baseWMSLayerProviders]);
 
   React.useEffect(() => {
-    const layers = wmsLayerProviders.map((provider) => viewer.current?.imageryLayers.addImageryProvider(provider));
-    return () => { layers.map((layer) => layer && viewer.current?.imageryLayers.remove(layer, false)); };
-  }, [wmsLayerProviders]);
+    const layersToAdd = wmsLayers.filter((layerOptions) => !viewer.current?.customImageryLayers.some((layer) => layer.value?.id === layerOptions.layers));
+    const layersToRemove = viewer.current?.customImageryLayers.filter((layer) => !wmsLayers.some((layerOptions) => layerOptions.layers === layer.value?.id));
+    layersToAdd.map((layerOptions) => viewer.current?.addCustomLayer(new CustomImageryLayer(new Cesium.WebMapServiceImageryProvider(layerOptions), undefined, { id: layerOptions.layers })));
+    layersToRemove?.map((layer) => viewer.current?.removeCustomLayer(layer));
+  }, [wmsLayers]);
 
   return (
     <>
