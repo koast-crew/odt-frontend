@@ -29,7 +29,7 @@ export default function Table(props: TableProps) {
   const contentStyle = 'flex size-full items-center justify-center bg-white py-[3px] text-[13px] flex-col';
 
   return (
-    <div style={{ gridTemplateColumns: `75px repeat(${ cols }, 1fr)` }} className={'grid place-items-center gap-px border-y border-zinc-300 bg-zinc-300 text-[14px]'}>
+    <div style={{ gridTemplateColumns: `75px repeat(${ cols }, 1fr)` }} className={'grid place-items-center gap-px border-y border-gray4 bg-zinc-300 text-[14px]'}>
       {
         table?.map((t, index) => {
           return <div key={index} className={t.type === 'header' ? headerStyle : contentStyle}>{t.text?.map((t, i) => <div key={i}>{t}</div>)}</div>;
