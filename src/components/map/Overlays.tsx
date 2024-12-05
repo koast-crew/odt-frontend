@@ -120,7 +120,7 @@ export default function Overlays(props: OverlayProps) {
     <>
       {overlays.map((props) => {
         return (
-          <Overlay {...props} onCloseOverlay={onCloseOverlay} />
+          <Overlay key={props.id} {...props} onCloseOverlay={onCloseOverlay} />
         );
       })}
     </>
