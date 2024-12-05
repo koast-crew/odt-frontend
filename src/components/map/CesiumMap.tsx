@@ -2,12 +2,14 @@ import React from 'react';
 import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 import Overlay from './Overlays';
-// import { wmsPointInfoApi } from '../../api';
+import { CurrentAnimation } from '../../utils/streamline';
+import { currentData } from '@/utils/streamlinetest';
 
 export interface CesiumMapProps {
   baseUrlLayers?: Array<Cesium.UrlTemplateImageryProvider.ConstructorOptions>
   baseWMSLayers?: Array<Cesium.WebMapServiceImageryProvider.ConstructorOptions>
   wmsLayers?: Array<Cesium.WebMapServiceImageryProvider.ConstructorOptions>
+  streamlineLayers?: Array<string>
   onClick?: (viewer: Cesium.Viewer, clickPosition: { lon: number, lat: number })=> void;
   overlays?: Array<{ id: string, position: { lon: number, lat: number }, displayValue?: number, gridId?: string, species?: string, time?: string, entity?: Cesium.Entity.ConstructorOptions }>
   onCloseOverlay?: (id: string)=> void
@@ -76,12 +78,15 @@ function CesiumMap(props: CesiumMapProps) {
     baseUrlLayers = [],
     baseWMSLayers = [],
     wmsLayers = [],
+    streamlineLayers = [],
     onClick,
     overlays = [],
     onCloseOverlay,
+    zoomLevel = 50,
     onZoomLevelChange,
   } = props;
   const viewer = React.useRef<CustomViewer>();
+  const currentAnimation = React.useRef<CurrentAnimation>();
 
   const baseUrlLayerProviders = React.useMemo(
     () => baseUrlLayers.map((layerOptions) => new Cesium.UrlTemplateImageryProvider({ ...layerOptions, ...customUrlOptions })),
@@ -92,13 +97,19 @@ function CesiumMap(props: CesiumMapProps) {
     [baseWMSLayers],
   );
 
+  const heightToZoomLevel = (height: number) => {
+    return Number(((100 - ((height - 50010) / (3450000 - 50010) * 100)).toPrecision(2)));
+  };
+
+  const zoomLevelToHeight = (zoomLevel: number) => {
+    return ((100 - zoomLevel) * (3450000 - 50010) / 100) + 50010;
+  };
+
   const setZoomWithForce = (height: number) => {
     if (!viewer.current) return;
-    const minHeight = 50010;
-    const maxHeight = 3450000;
     const { longitude, latitude } = viewer.current.camera.positionCartographic;
     viewer.current.camera.setView({
-      destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height > maxHeight ? maxHeight : height < minHeight ? minHeight : height), // 경도, 위도, 높이
+      destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height), // 경도, 위도, 높이
     });
   };
 
@@ -119,7 +130,20 @@ function CesiumMap(props: CesiumMapProps) {
   }, []);
 
   React.useEffect(() => {
-    console.log('overlay effect');
+    if (!viewer.current) return;
+    streamlineLayers.map((layer) => {
+      if (layer === 'current') {
+        currentAnimation.current = new CurrentAnimation({ map: viewer.current }, currentData);
+        currentAnimation.current.start();
+      }
+    });
+    return () => {
+      currentAnimation.current?.clear();
+    };
+  }, [streamlineLayers]);
+
+  React.useEffect(() => {
+    console.log('overlay & zoom effect');
 
     const overlayIds = overlays.map((ol) => ol.id);
     viewer.current?.entities.values.map((entity) => {
@@ -144,7 +168,11 @@ function CesiumMap(props: CesiumMapProps) {
     const postRenderListener = () => {
       if (!viewer.current) return;
 
-      console.log(viewer.current.camera.positionCartographic.height);
+      console.log(heightToZoomLevel(viewer.current.camera.positionCartographic.height));
+      // setZoomWithForce(zoomLevelToHeight(zoomLevel));
+      // if (zoomLevel !== heightToZoomLevel(viewer.current.camera.positionCartographic.height)) {
+      //   onZoomLevelChange?.(heightToZoomLevel(viewer.current.camera.positionCartographic.height));
+      // }
 
       overlays.map(({ id, position: { lon, lat } }) => {
         if (!viewer.current) return;
@@ -165,7 +193,7 @@ function CesiumMap(props: CesiumMapProps) {
       viewer.current?.scene.postRender.removeEventListener(postRenderListener);
       console.log('overlay effect cleanup', viewer.current?.scene.postRender.numberOfListeners);
     };
-  }, [overlays]);
+  }, [overlays, zoomLevel, onZoomLevelChange]);
 
   React.useEffect(() => {
     if (!viewer.current) return;

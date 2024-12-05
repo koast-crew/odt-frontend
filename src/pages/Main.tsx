@@ -213,6 +213,7 @@ function Main() {
   const [reanalysisQuery, setReanalysisQuery] = React.useState({ species: 'squid', analysDate: dayjs().format('YYYYMMDD') });
   const [tab, setTab] = React.useState<'dailyFish' | 'reanalysis'>('dailyFish');
   const [selectedLayers, setSelectedLayers] = React.useState<string[]>(['grid', 'fish']);
+  const [selectedStreamline, setSelectedStreamline] = React.useState<string[]>([]);
   const [zoomLevel, setZoomLevel] = React.useState(50);
 
   const timeList = React.useMemo(
@@ -263,14 +264,24 @@ function Main() {
       <div className={'relative flex size-full max-h-full min-w-[720px]'}>
         <CesiumMap
           wmsLayers={wmsLayers}
+          streamlineLayers={selectedStreamline}
           onClick={handleMapOnClick}
           overlays={overlays}
           onCloseOverlay={handleOnCloseOverlay}
+          zoomLevel={zoomLevel}
+          onZoomLevelChange={setZoomLevel}
         />
         <div className={'absolute bottom-0 flex h-14 w-full items-center justify-center px-[10%]'}>
           {React.useMemo(() => <PlayBar timeList={timeList} index={playbarIndex} onChange={handleOnChangePlayBar} />, [playbarIndex, timeList, handleOnChangePlayBar])}
         </div>
-        <ToolBar selectedLayers={selectedLayers} onChangeSelectedLayers={handleOnChangeSelectedLayers} zoomLevel={zoomLevel} onChangeZoomLevel={setZoomLevel} />
+        <ToolBar
+          selectedLayers={selectedLayers}
+          onChangeSelectedLayers={handleOnChangeSelectedLayers}
+          selectedStreamline={selectedStreamline}
+          onChangeSelectedStreamline={setSelectedStreamline}
+          zoomLevel={zoomLevel}
+          onChangeZoomLevel={setZoomLevel}
+        />
       </div>
     </>
   );

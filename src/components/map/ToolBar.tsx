@@ -1,19 +1,25 @@
 import React from 'react';
-import { Grid, Fish, Thermometer, Waves, ArrowUpFromDot, Leaf, Plus, Minus } from 'lucide-react';
+import { Grid, Fish, Thermometer, Waves, ArrowUpFromDot, Leaf, Plus, Minus, WindArrowDown } from 'lucide-react';
 
 export interface ToolBarProps {
   selectedLayers: string[]
+  selectedStreamline?: string[]
   onChangeSelectedLayers: (layers: string[])=> void
+  onChangeSelectedStreamline?: (layers: string[])=> void
   zoomLevel?: number
   onChangeZoomLevel?: (level: number)=> void
 }
 
 function ToolBar(props: ToolBarProps) {
-  const { selectedLayers, onChangeSelectedLayers, zoomLevel = 50, onChangeZoomLevel } = props;
+  const { selectedLayers, selectedStreamline = [], onChangeSelectedLayers, onChangeSelectedStreamline, zoomLevel = 50, onChangeZoomLevel } = props;
   const [isMouseDown, setIsMouseDown] = React.useState(false);
 
   const handleOnClickLayer = (layer: string) => {
     onChangeSelectedLayers(selectedLayers.includes(layer) ? selectedLayers.filter((l) => l !== layer) : [...selectedLayers, layer]);
+  };
+
+  const handleOnClickStreamline = (layer: string) => {
+    onChangeSelectedStreamline?.(selectedStreamline.includes(layer) ? selectedStreamline.filter((l) => l !== layer) : [...selectedStreamline, layer]);
   };
 
   const handleOnMouseClickZoomLevel = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -59,8 +65,16 @@ function ToolBar(props: ToolBarProps) {
         </button>
       </div>
       <div className={'mt-2 flex flex-col rounded-md bg-zinc-700 shadow-md shadow-zinc-900'}>
-        <button onClick={() => handleOnClickLayer('sst')} className={
+        <button onClick={() => handleOnClickStreamline('current')} className={
           'flex h-11 w-full flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-light'
+          + (selectedStreamline.includes('current') ? ' bg-orange' : ' bg-zinc-500')
+        }
+        >
+          <WindArrowDown className={'size-4'} />
+          <div className={'flex items-center justify-center'}>{'해류'}</div>
+        </button>
+        <button onClick={() => handleOnClickLayer('sst')} className={
+          'flex h-11 w-full flex-col items-center justify-center border-b border-zinc-400 text-[11px] text-light'
           + (selectedLayers.includes('sst') ? ' bg-orange' : ' bg-zinc-500')
         }
         >
@@ -92,7 +106,7 @@ function ToolBar(props: ToolBarProps) {
           <div className={'flex items-center justify-center'}>{'클로로필'}</div>
         </button>
       </div>
-      <div className={'mt-2 flex flex-col rounded-md bg-zinc-700 shadow-md shadow-zinc-900'}>
+      {/* <div className={'mt-2 flex flex-col rounded-md bg-zinc-700 shadow-md shadow-zinc-900'}>
         <button onClick={() => onChangeZoomLevel?.(zoomLevel >= 100 ? 100 : Number((zoomLevel + 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-zinc-50'}>
           <Plus className={'size-4'} />
           <div className={'flex items-center justify-center'}>{'확대'}</div>
@@ -107,16 +121,16 @@ function ToolBar(props: ToolBarProps) {
             className={'relative flex h-32 w-full'}
           >
             <div className={'absolute bottom-0 left-[calc(50%_-_0.125rem)] h-full w-1 rounded-full bg-zinc-500'} />
-            <div style={{ height: `${ 100 - (100 - zoomLevel) }%` }} className={'absolute bottom-0 left-[calc(50%_-_0.125rem)] h-full w-1 rounded-full bg-orange-500'} />
+            <div style={{ height: `${ 100 - (100 - zoomLevel) }%` }} className={'absolute bottom-0 left-[calc(50%_-_0.125rem)] h-full w-1 rounded-full bg-orange'} />
             <div style={{ top: `${ 100 - zoomLevel }%` }} className={'absolute left-[calc(50%_-_0.6rem)] top-0 h-2 w-5 cursor-pointer rounded-full bg-zinc-200'} />
           </div>
           <div className={'mt-2 flex w-full select-none items-center justify-center text-[11px] font-bold text-zinc-50'}>{`${ zoomLevel }%`}</div>
         </div>
-        <button onClick={() => onChangeZoomLevel?.(zoomLevel <= 10 ? 10 : Number((zoomLevel - 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-b-md border-zinc-400 text-[11px] text-zinc-50'}>
+        <button onClick={() => onChangeZoomLevel?.(zoomLevel <= 0 ? 0 : Number((zoomLevel - 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-b-md border-zinc-400 text-[11px] text-zinc-50'}>
           <Minus className={'size-4'} />
           <div className={'flex items-center justify-center'}>{'축소'}</div>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
