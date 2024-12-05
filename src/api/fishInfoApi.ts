@@ -27,6 +27,20 @@ export interface PointFishInfo {
   wave: number
 }
 
+export interface ReanalysisInfo {
+  labelMonths: string[]
+  labelYears: string[]
+  dataList: number[][]
+  locationList: Array<{
+    totalCatch: number
+    species: string
+    gridId: string
+    latitude: number
+    longitude: number
+    region: string
+  }>
+}
+
 export const fishInfoApi = createApi({
   reducerPath: 'fishInfoApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/catch' }),
@@ -46,6 +60,15 @@ export const fishInfoApi = createApi({
           url: '/latlon',
           method: 'GET',
           params: { lon, lat, analysDate, species },
+        };
+      },
+    }),
+    getReanalysisInfo: builder.query<ResultResponse<ReanalysisInfo>, { species: string, analysDate: string }>({
+      query: ({ species, analysDate }) => {
+        return {
+          url: '/reanal',
+          method: 'GET',
+          params: { species, analysDate },
         };
       },
     }),
