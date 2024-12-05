@@ -67,8 +67,8 @@ function Main() {
     <>
       <div className={'flex h-full w-[350px] flex-col p-4'}>
         <div className={'flex h-8 w-full'}>
-          <div className={'flex h-full w-36 items-center justify-center rounded-t-md bg-blue-500 text-[14px] text-zinc-50'}>{'일별 어획량 예측(AI)'}</div>
-          <div className={'ml-1 flex h-full w-36 items-center justify-center rounded-t-md bg-zinc-500 text-[14px] text-zinc-50'}>{'연도별 어획량 관측'}</div>
+          <div className={'flex h-full w-36 items-center justify-center rounded-t-md bg-blue text-[14px] text-light'}>{'일별 어획량 예측(AI)'}</div>
+          <div className={'ml-1 flex h-full w-36 items-center justify-center rounded-t-md bg-zinc-500 text-[14px] text-light'}>{'연도별 어획량 관측'}</div>
         </div>
         <div className={'grid w-full grid-cols-[75px,_1fr] grid-rows-3 place-items-center gap-1 border-y border-zinc-300 p-2 py-4'}>
           <div className={'justify-self-start text-[13px] font-bold'}>{'어종 선택'}</div>
@@ -80,9 +80,9 @@ function Main() {
           <input value={dayjs(maxFishQuery.analysDate).format('YYYY-MM-DD')} onChange={handleOnDateChange} type={'date'} className={'h-8 w-full border border-zinc-300 p-1 text-[13px]'} />
           <div className={'justify-self-start text-[13px] font-bold'}>{'해역 선택'}</div>
           <div className={'grid h-8 w-full grid-cols-3 place-items-center gap-1'}>
-            <button onClick={() => handleOnSelectSea('west')} className={'h-6 w-full rounded-md text-[13px] text-zinc-50' + (maxFishQuery.sea === 'west' ? ' bg-orange-500' : ' bg-zinc-500')}>{'서해'}</button>
-            <button onClick={() => handleOnSelectSea('south')} className={'h-6 w-full rounded-md text-[13px] text-zinc-50' + (maxFishQuery.sea === 'south' ? ' bg-orange-500' : ' bg-zinc-500')}>{'남해'}</button>
-            <button onClick={() => handleOnSelectSea('east')} className={'h-6 w-full rounded-md text-[13px] text-zinc-50' + (maxFishQuery.sea === 'east' ? ' bg-orange-500' : ' bg-zinc-500')}>{'동해'}</button>
+            <button onClick={() => handleOnSelectSea('west')} className={'h-6 w-full rounded-md text-[13px] text-light' + (maxFishQuery.sea === 'west' ? ' bg-orange' : ' bg-zinc-500')}>{'서해'}</button>
+            <button onClick={() => handleOnSelectSea('south')} className={'h-6 w-full rounded-md text-[13px] text-light' + (maxFishQuery.sea === 'south' ? ' bg-orange' : ' bg-zinc-500')}>{'남해'}</button>
+            <button onClick={() => handleOnSelectSea('east')} className={'h-6 w-full rounded-md text-[13px] text-light' + (maxFishQuery.sea === 'east' ? ' bg-orange' : ' bg-zinc-500')}>{'동해'}</button>
           </div>
         </div>
         <div className={'flex h-8 w-full items-center justify-center text-[14px] font-bold'}>{'예측 어획량 최대 지점'}</div>
