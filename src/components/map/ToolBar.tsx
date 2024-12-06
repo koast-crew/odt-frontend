@@ -11,49 +11,69 @@ export interface ToolBarProps {
 }
 
 interface ToolbarButton {
-  id: string;
+  id: keyof typeof icons;
   label: string;
-  icon: React.ReactNode;
   type: 'layer' | 'streamline';
 }
 
+const icons = {
+  grid: <Grid className={'size-4'} />,
+  fish: <FishSymbol className={'size-4'} />,
+  current: <WindArrowDown className={'size-4'} />,
+  sst: <Thermometer className={'size-4'} />,
+  wave: <Waves className={'size-4'} />,
+  ssh: <ArrowUpFromDot className={'size-4'} />,
+  chl: <Leaf className={'size-4'} />,
+};
+
 const toolbarButtons: ToolbarButton[][] = [
   [
-    { id: 'grid', label: '격자', icon: <Grid className={'size-4'} />, type: 'layer' },
-    { id: 'fish', label: '어획량', icon: <FishSymbol className={'size-4'} />, type: 'layer' },
+    { id: 'grid', label: '격자', type: 'layer' },
+    { id: 'fish', label: '어획량', type: 'layer' },
   ],
   [
-    { id: 'current', label: '해류', icon: <WindArrowDown className={'size-4'} />, type: 'streamline' },
-    { id: 'sst', label: '수온', icon: <Thermometer className={'size-4'} />, type: 'layer' },
-    { id: 'wave', label: '파고', icon: <Waves className={'size-4'} />, type: 'layer' },
-    { id: 'ssh', label: '수위', icon: <ArrowUpFromDot className={'size-4'} />, type: 'layer' },
-    { id: 'chl', label: '클로로필', icon: <Leaf className={'size-4'} />, type: 'layer' },
+    { id: 'current', label: '해류', type: 'streamline' },
+    { id: 'sst', label: '수온', type: 'layer' },
+    { id: 'wave', label: '파고', type: 'layer' },
+    { id: 'ssh', label: '수위', type: 'layer' },
+    { id: 'chl', label: '클로로필', type: 'layer' },
   ],
 ];
 
-const ButtonTooltip = ({ label }: { label: string }) => {
+const Tooltip = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => {
   return (
-    <div className={'absolute right-[calc(100%+8px)] top-1/2 z-20 hidden -translate-y-1/2 animate-slideInFromRight whitespace-nowrap rounded-md bg-gray9 px-2 py-1 text-xs text-white group-hover:block '}>
-      {label}
-      <div className={' animation-slideInFromRight absolute right-[-4px] top-1/2 size-0 -translate-y-1/2 border-y-4 border-l-4 border-y-transparent border-l-gray9 '} />
+    <div className={'group relative'}>
+      {children}
+      <div className={'absolute right-[calc(100%+8px)] top-1/2 z-20 hidden -translate-y-1/2 animate-slideInFromRight whitespace-nowrap rounded-md bg-gray9 px-2 py-1 text-xs text-white group-hover:block '}>
+        {label}
+        <div className={' animation-slideInFromRight absolute right-[-4px] top-1/2 size-0 -translate-y-1/2 border-y-4 border-l-4 border-y-transparent border-l-gray9 '} />
+      </div>
     </div>
   );
 };
 
 const ToolbarButton = ({
-  button,
+  children,
+  label,
   isFirst,
   isLast,
   isSelected,
   onClick,
 }: {
-  button: ToolbarButton;
+  children: React.ReactNode;
+  label: string;
   isFirst: boolean;
   isLast: boolean;
   isSelected: boolean;
   onClick: ()=> void;
 }) => (
-  <div className={'group relative'}>
+  <Tooltip label={label}>
     <button
       onClick={onClick}
       className={`
@@ -64,11 +84,10 @@ const ToolbarButton = ({
         transition-colors duration-200
       `}
     >
-      {button.icon}
-      <div className={'flex items-center justify-center text-[10px]'}>{button.label}</div>
+      {children}
+      <div className={'flex items-center justify-center text-[10px]'}>{label}</div>
     </button>
-    <ButtonTooltip label={button.label} />
-  </div>
+  </Tooltip>
 );
 
 const sliderOffset = 10;
@@ -120,33 +139,37 @@ function ToolBar(props: ToolBarProps) {
           key={groupIndex}
           className={`${ groupIndex > 0 ? 'mt-2' : '' } flex flex-col rounded-md bg-gray6 shadow-md shadow-zinc-900`}
         >
-          {buttonGroup.map((button, index) => (
-            <ToolbarButton
-              key={button.id}
-              button={button}
-              isFirst={index === 0}
-              isLast={index === buttonGroup.length - 1}
-              isSelected={
-                button.type === 'layer'
-                  ? selectedLayers.includes(button.id)
-                  : selectedStreamline.includes(button.id)
-              }
-              onClick={() =>
-                button.type === 'layer'
-                  ? handleOnClickLayer(button.id)
-                  : handleOnClickStreamline(button.id)
-              }
-            />
-          ))}
+          {buttonGroup.map((button, index) => {
+            return (
+              <ToolbarButton
+                key={button.id}
+                label={button.label}
+                isFirst={index === 0}
+                isLast={index === buttonGroup.length - 1}
+                isSelected={
+                  button.type === 'layer'
+                    ? selectedLayers.includes(button.id)
+                    : selectedStreamline.includes(button.id)
+                }
+                onClick={() =>
+                  button.type === 'layer'
+                    ? handleOnClickLayer(button.id)
+                    : handleOnClickStreamline(button.id)
+                }
+              >
+                {icons[button.id]}
+              </ToolbarButton>
+            );
+          })}
         </div>
       ))}
       <div className={'mt-2 flex flex-col rounded-md bg-gray8 shadow-md shadow-zinc-900'}>
         <div className={'group relative'}>
-          <button onClick={() => onChangeZoomLevel?.(processedZoomLevel >= 100 ? 100 : Number((processedZoomLevel + 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-t-md border-b border-gray2 text-[11px] text-light'}>
-            <Plus className={'size-4'} />
-            {/* <div className={'flex items-center justify-center'}>{'확대'}</div> */}
-          </button>
-          <ButtonTooltip label={'확대'} />
+          <Tooltip label={'확대'} >
+            <button onClick={() => onChangeZoomLevel?.(processedZoomLevel >= 100 ? 100 : Number((processedZoomLevel + 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-t-md border-b border-gray2 text-[11px] text-light'}>
+              <Plus className={'size-4'} />
+            </button>
+          </Tooltip>
         </div>
         <div className={'flex w-full cursor-pointer flex-col items-center justify-center border-b border-gray2 py-3'}>
           <div
@@ -168,11 +191,11 @@ function ToolBar(props: ToolBarProps) {
           <div className={'mt-2 flex w-full select-none items-center justify-center text-[11px] font-bold text-light'}>{`${ processedZoomLevel }%`}</div>
         </div>
         <div className={'group relative'}>
-          <button onClick={() => onChangeZoomLevel?.(processedZoomLevel <= 10 ? 0 : Number((processedZoomLevel - 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-b-md border-gray2 text-[11px] text-light'}>
-            <Minus className={'size-4'} />
-            {/* <div className={'flex items-center justify-center'}>{'축소'}</div> */}
-          </button>
-          <ButtonTooltip label={'축소'} />
+          <Tooltip label={'축소'} >
+            <button onClick={() => onChangeZoomLevel?.(processedZoomLevel <= 10 ? 0 : Number((processedZoomLevel - 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-b-md border-gray2 text-[11px] text-light'}>
+              <Minus className={'size-4'} />
+            </button>
+          </Tooltip>
         </div>
       </div>
     </div>
