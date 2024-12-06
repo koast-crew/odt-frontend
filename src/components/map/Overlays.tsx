@@ -29,18 +29,19 @@ const convertDMS = (lon: number, lat: number) => {
 };
 
 const getFishCatchColor = (value?: number | null) => {
-  if (typeof value !== 'number') return '#cccccc';
-  if (value >= 90) return '#ff0000';
-  if (value >= 80) return '#f78d26';
-  if (value >= 70) return '#c2dafd';
-  if (value >= 60) return '#a3b8fd';
-  if (value >= 50) return '#8595fd';
-  if (value >= 40) return '#6673fe';
-  if (value >= 30) return '#4750fe';
-  if (value >= 20) return '#292eff';
-  if (value >= 10) return '#0a0cff';
-  if (value >= 0) return '#0000ff';
-  return '#cccccc';
+  if (typeof value !== 'number') return '#3a3a3a';
+  if (value > 300) return '#a13030';
+  if (value > 90) return '#b84040';
+  if (value > 80) return '#e66000';
+  if (value > 70) return '#ff7f1a';
+  if (value > 60) return '#ff9233';
+  if (value > 50) return '#6b8a55';
+  if (value > 40) return '#7fa065';
+  if (value > 30) return '#94b575';
+  if (value > 20) return '#4c8cff';
+  if (value > 10) return '#66a6ff';
+  if (value > 0) return '#a0d5f0';
+  return '#3a3a3a';
 };
 
 function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onCloseOverlay: OverlayProps['onCloseOverlay'] }) {
@@ -55,29 +56,29 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
     <div
       id={id}
       key={id}
-      className={(payload && !error && !isLoading ? 'h-56 ' : 'h-36 ') + 'absolute z-10 flex min-w-36 items-center justify-center rounded-sm bg-zinc-50 py-1 px-2 text-sm shadow-md shadow-zinc-600 after:absolute after:-bottom-3 after:h-3 after:w-4 after:border-x-[1rem] after:border-t-[0.75rem] after:border-x-transparent after:border-t-zinc-50'}
+      className={'absolute z-10 flex h-56 min-w-36 justify-center rounded-sm bg-zinc-50 px-2 py-1 text-sm shadow-md shadow-zinc-600 after:absolute after:-bottom-3 after:h-3 after:w-4 after:border-x-[1rem] after:border-t-[0.75rem] after:border-x-transparent after:border-t-zinc-50'}
     >
       <div className={'grid size-full text-xs'}>
         <div className={'flex items-center text-sm font-bold'}>
           <MapPin className={'size-5 fill-gray4 stroke-gray1'} />
           <span className={'flex-1'}>{gridId ?? '임의 지점'}</span>
         </div>
-        <div className={'grid size-full grid-cols-[2rem,_1fr] grid-rows-2 place-items-center pl-3 pr-0.5'}>
-          <span>{'위도'}</span>
+        <div className={'grid size-full grid-cols-[2rem,_1fr] grid-rows-2 place-items-center border border-gray2 px-2.5'}>
+          <span className={'font-bold text-gray6'}>{'위도'}</span>
           <span className={'flex w-full justify-end'}>{convertDMS(lon, lat).lat}</span>
-          <span>{'경도'}</span>
+          <span className={'font-bold text-gray6'}>{'경도'}</span>
           <span className={'flex w-full justify-end'}>{convertDMS(lon, lat).lon}</span>
         </div>
-        <div className={'my-2'}>
+        <div className={'mb-2 mt-1 flex w-full justify-center'}>
           {payload && !error && !isLoading ? (
-            <div className={'grid size-full grid-cols-[3rem,_1fr] grid-rows-4 place-items-center border border-gray2 p-1'}>
+            <div className={'grid size-full grid-cols-[3rem_1fr] grid-rows-4 place-items-center border border-gray2 p-1'}>
               <div className={'text-[12px] font-bold text-gray6'}>{'어획량'}</div>
-              <div className={'flex w-full items-center justify-start font-bold'}>
+              <div className={'flex w-full items-center justify-start'}>
                 <svg className={'mr-1 size-3'} fill={getFishCatchColor(predictCatch)}>
                   <circle cx={6} cy={6} r={6} />
                 </svg>
-                <span className={'font-bold'} style={{ color: getFishCatchColor(predictCatch) }}>
-                  {predictCatch ?? '-'}
+                <span style={{ color: getFishCatchColor(predictCatch) }}>
+                  <span className={'font-bold'}>{predictCatch ?? '-'}</span>
                   <span className={'text-gray6'}>{' ton'}</span>
                 </span>
               </div>
@@ -102,9 +103,9 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
                 <div className={'pl-1 text-[10px] font-bold text-gray6'}>{'㎎/㎥'}</div>
               </div>
             </div>
-          ) : isLoading ? <Spinner className={'col-span-2 flex w-[25px] justify-center text-[13px] font-bold'} /> : <div className={'col-span-2 flex w-full justify-center text-[13px] font-bold'}>{'데이터가 없습니다.'}</div>}
+          ) : isLoading ? <Spinner className={'col-span-2 h-[88px] w-[30px] p-1 text-[13px] font-bold'} /> : <div className={'col-span-2 flex h-[88px] w-full items-center justify-center border border-gray2 text-[13px] font-bold'}>{'데이터가 없습니다.'}</div>}
         </div>
-        <button onClick={() => onCloseOverlay?.(id)} className={'mb-1 flex w-full items-center justify-center rounded-sm bg-zinc-500 pb-1 text-xs text-light'}>{'닫기'}</button>
+        <button onClick={() => onCloseOverlay?.(id)} className={'mb-1 flex h-6 w-full items-center justify-center rounded-sm bg-zinc-500 text-xs text-light'}>{'닫기'}</button>
       </div>
     </div>
   );
