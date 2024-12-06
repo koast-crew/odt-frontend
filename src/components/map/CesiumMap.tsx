@@ -33,12 +33,13 @@ class CustomViewer extends Cesium.Viewer {
 }
 
 class CustomImageryLayer extends Cesium.ImageryLayer {
-  constructor(provider?: Cesium.ImageryProvider, options?: Cesium.ImageryLayer.ConstructorOptions, value?: { id: string }) {
+  constructor(provider?: Cesium.ImageryProvider, options?: Cesium.ImageryLayer.ConstructorOptions, value?: { id: string, time: string }) {
     super(provider, options);
     this.value = value;
   }
   value?: {
     id: string;
+    time: string;
   };
 }
 
@@ -228,9 +229,9 @@ function CesiumMap(props: CesiumMapProps) {
   }, [baseWMSLayerProviders]);
 
   React.useEffect(() => {
-    const layersToAdd = wmsLayers.filter((layerOptions) => !viewer.current?.customImageryLayers.some((layer) => layer.value?.id === layerOptions.layers));
-    const layersToRemove = viewer.current?.customImageryLayers.filter((layer) => !wmsLayers.some((layerOptions) => layerOptions.layers === layer.value?.id));
-    layersToAdd.map((layerOptions) => viewer.current?.addCustomLayer(new CustomImageryLayer(new Cesium.WebMapServiceImageryProvider(layerOptions), undefined, { id: layerOptions.layers })));
+    const layersToAdd = wmsLayers.filter((layerOptions) => !viewer.current?.customImageryLayers.some((layer) => layer.value?.id === layerOptions.layers && layer.value?.time === layerOptions.parameters.viewparams));
+    const layersToRemove = viewer.current?.customImageryLayers.filter((layer) => !wmsLayers.some((layerOptions) => layerOptions.layers === layer.value?.id && layerOptions.parameters.viewparams === layer.value?.time));
+    layersToAdd.map((layerOptions) => viewer.current?.addCustomLayer(new CustomImageryLayer(new Cesium.WebMapServiceImageryProvider(layerOptions), undefined, { id: layerOptions.layers, time: layerOptions.parameters.viewparams })));
     layersToRemove?.map((layer) => viewer.current?.removeCustomLayer(layer));
   }, [wmsLayers]);
 

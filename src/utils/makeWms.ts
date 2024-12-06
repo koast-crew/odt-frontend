@@ -12,7 +12,7 @@ export const makeWms = (layer: string, time?: string) => {
     layers: `mdtwin:${ layerName }`,
     parameters: {
       ...baseWMS.parameters,
-      viewparams: time ? `ctsh_rprt_ymd:${ time }` : '',
+      viewparams: layer === 'grid' ? '' : time ? `ctsh_rprt_ymd:${ time }` : '',
     },
   };
 };
