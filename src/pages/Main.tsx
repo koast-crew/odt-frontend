@@ -46,7 +46,7 @@ function DailyFish(props: DailyFishProps) {
 
   const maxFishTable = React.useMemo(() => (
     <LeftHeaderTable
-      leftHeader={[['날짜'], ['어획량(t)'], ['수온(℃)'], ['파고(m)'], ['수위(m)'], ['클로로필', '(㎎/㎥)']]}
+      leftHeader={[['날짜'], ['어획량(kg)'], ['수온(℃)'], ['파고(m)'], ['수위(m)'], ['클로로필', '(㎎/㎥)']]}
       tableContent={maxFishTableContent}
       isFirstRowHeader
     />
@@ -102,7 +102,7 @@ function DailyFish(props: DailyFishProps) {
               <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload?.[0].predictCatch}</div>
             </div>
           </div>
-          <span className={'flex h-8 w-full items-center justify-start px-1 text-[14px] font-bold'}>
+          <span className={'flex h-8 w-full items-center justify-between px-1 text-[14px] font-bold'}>
             <span className={'mr-1'}>{'향후 3일 예측'}</span>
             <span className={'text-xs text-gray7'}>{' [지점: '}{maxFishInfo?.payload?.[0].gridId}{']'}</span>
           </span>

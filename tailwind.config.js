@@ -27,6 +27,15 @@ export default {
         gray9: 'var(--gray9)',
         gray10: 'var(--gray10)',
       },
+      keyframes: {
+        slideInFromRight: {
+          'from': { opacity: '0', transform: 'translate(5px, -50%)' },
+          'to': { opacity: '1', transform: 'translate(0, -50%)' },
+        },
+      },
+      animation: {
+        slideInFromRight: 'slideInFromRight 0.2s ease-in-out',
+      },
     },
   },
   plugins: [],
