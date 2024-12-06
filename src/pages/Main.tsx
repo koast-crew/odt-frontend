@@ -30,6 +30,13 @@ interface DailyFishProps {
   setMaxFishQuery: React.Dispatch<React.SetStateAction<MaxFishQuery>>
 }
 
+const speciesOptions = [
+  { value: 'squid', text: '살오징어', label: '살오징어 (금어기 4/1 ~ 5/31)' },
+  { value: 'cutlassfish', text: '갈치', label: '갈치 (금어기 7/1 ~ 7/31)' },
+  { value: 'anchovy', text: '멸치', label: '멸치 (금어기 4/1 ~ 6/30)' },
+  { value: 'mackerel', text: '고등어', label: '고등어 (금어기 4/1 ~ 4/30)' },
+];
+
 function DailyFish(props: DailyFishProps) {
   const { maxFishQuery, setMaxFishQuery } = props;
   const { data: maxFishInfo, error, isLoading } = fishInfoApi.endpoints.getMaxFishPointInfo.useQuery(maxFishQuery);
@@ -68,7 +75,9 @@ function DailyFish(props: DailyFishProps) {
         <label htmlFor={'daily-fish-species'} className={'justify-self-center text-[13px] font-bold'}>{'어종'}</label>
         <select id={'daily-fish-species'} onChange={handleOnChangeFishSelect} className={'h-8 w-full border border-gray4 p-1 text-[13px]'}>
           <option value={'squid'}>{'살오징어 (금어기 4/1 ~ 5/31)'}</option>
-          <option value={'salmon'}>{'연어 (금어기 9/1 ~ 12/31)'}</option>
+          <option value={'cutlassfish'}>{'갈치 (금어기 7/1 ~ 7/31)'}</option>
+          <option value={'anchovy'}>{'멸치 (금어기 4/1 ~ 6/30)'}</option>
+          <option value={'mackerel'}>{'고등어 (금어기 4/1 ~ 4/30)'}</option>
         </select>
         <label htmlFor={'daily-fish-date'} className={'justify-self-center text-[13px] font-bold'}>{'날짜'}</label>
         <input id={'daily-fish-date'} value={dayjs(maxFishQuery.analysDate).format('YYYY-MM-DD')} onChange={handleOnDateChange} type={'date'} className={'h-8 w-full border border-gray4 p-1 text-[13px]'} />
@@ -91,7 +100,9 @@ function DailyFish(props: DailyFishProps) {
             <div className={'flex h-8 w-full items-center justify-start pl-1 text-[14px] font-bold'}>
               {'예측 어획량 최대 지점'}
             </div>
-            <div className={'grid h-28 w-full grid-cols-[100px,_1fr] place-items-center gap-px border-y border-gray4 bg-zinc-300 text-[13px]'}>
+            <div className={'grid h-32 w-full grid-cols-[100px,_1fr] place-items-center gap-px border-y border-gray4 bg-zinc-300 text-[13px]'}>
+              <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'어종'}</div>
+              <div className={'flex size-full items-center justify-center bg-white'}>{speciesOptions.find((so) => so.value === maxFishInfo?.payload?.[0].species)?.text}</div>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'날짜'}</div>
               <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload?.[0].analysDate}</div>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'격자 아이디'}</div>
@@ -166,7 +177,9 @@ function Reanalysis(props: ReanalysisProps) {
         <label htmlFor={'reanalysis-species'} className={'justify-self-center text-[13px] font-bold'}>{'어종'}</label>
         <select id={'reanalysis-species'} onChange={handleOnChangeFishSelect} className={'h-8 w-full border border-gray4 p-1 text-[13px]'}>
           <option value={'squid'}>{'살오징어 (금어기 4/1 ~ 5/31)'}</option>
-          <option value={'salmon'}>{'연어 (금어기 9/1 ~ 12/31)'}</option>
+          <option value={'cutlassfish'}>{'갈치 (금어기 7/1 ~ 7/31)'}</option>
+          <option value={'anchovy'}>{'멸치 (금어기 4/1 ~ 6/30)'}</option>
+          <option value={'mackerel'}>{'고등어 (금어기 4/1 ~ 4/30)'}</option>
         </select>
         <label htmlFor={'reanalysis-date'} className={'justify-self-center text-[13px] font-bold'}>{'날짜'}</label>
         <input id={'reanalysis-date'} value={dayjs(reanalysisQuery.analysDate).format('YYYY-MM-DD')} onChange={handleOnDateChange} type={'date'} className={'h-8 w-full border border-gray4 p-1 text-[13px]'} />
@@ -242,8 +255,8 @@ function Main() {
   const handleOnChangePlayBar = React.useCallback((index: number) => {setPlayBarIndex(index);}, []);
   const handleOnChangeSelectedLayers = React.useCallback((layers: string[]) => {setSelectedLayers(layers);}, []);
   const wmsLayers = React.useMemo(() => {
-    return selectedLayers.map((layer) => makeWms(layer, timeList[playbarIndex]));
-  }, [playbarIndex, timeList, selectedLayers]);
+    return selectedLayers.map((layer) => makeWms(layer, timeList[playbarIndex], tab === 'dailyFish' ? maxFishQuery.species : reanalysisQuery.species));
+  }, [playbarIndex, timeList, selectedLayers, maxFishQuery, reanalysisQuery, tab]);
 
   React.useEffect(() => {
     setOverlays((ol) => ol.map((item) => ({ ...item, time: timeList[playbarIndex] })));
