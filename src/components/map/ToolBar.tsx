@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Fish, Thermometer, Waves, ArrowUpFromDot, Leaf, Plus, Minus, WindArrowDown } from 'lucide-react';
+import { Grid, FishSymbol, Thermometer, Waves, ArrowUpFromDot, Leaf, Plus, Minus, WindArrowDown } from 'lucide-react';
 
 export interface ToolBarProps {
   selectedLayers: string[]
@@ -9,6 +9,54 @@ export interface ToolBarProps {
   zoomLevel?: number
   onChangeZoomLevel?: (level: number)=> void
 }
+
+interface ToolbarButton {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  type: 'layer' | 'streamline';
+}
+
+const TOOLBAR_BUTTONS: ToolbarButton[][] = [
+  [
+    { id: 'grid', label: '격자', icon: <Grid className={'size-4'} />, type: 'layer' },
+    { id: 'fish', label: '어획량', icon: <FishSymbol className={'size-4'} />, type: 'layer' },
+  ],
+  [
+    { id: 'current', label: '해류', icon: <WindArrowDown className={'size-4'} />, type: 'streamline' },
+    { id: 'sst', label: '수온', icon: <Thermometer className={'size-4'} />, type: 'layer' },
+    { id: 'wave', label: '파고', icon: <Waves className={'size-4'} />, type: 'layer' },
+    { id: 'ssh', label: '수위', icon: <ArrowUpFromDot className={'size-4'} />, type: 'layer' },
+    { id: 'chl', label: '클로로필', icon: <Leaf className={'size-4'} />, type: 'layer' },
+  ],
+];
+
+const ToolbarButton = ({
+  button,
+  isFirst,
+  isLast,
+  isSelected,
+  onClick,
+}: {
+  button: ToolbarButton;
+  isFirst: boolean;
+  isLast: boolean;
+  isSelected: boolean;
+  onClick: ()=> void;
+}) => (
+  <button
+    onClick={onClick}
+    className={`
+      flex h-11 w-full flex-col items-center justify-center text-[11px] text-light
+      ${ isFirst ? 'rounded-t-md' : '' } 
+      ${ isLast ? 'rounded-b-md' : 'border-b border-zinc-400' }
+      ${ isSelected ? 'bg-orange' : 'bg-gray6' }
+    `}
+  >
+    {button.icon}
+    <div className={'flex items-center justify-center text-[10px]'}>{button.label}</div>
+  </button>
+);
 
 function ToolBar(props: ToolBarProps) {
   const { selectedLayers, selectedStreamline = [], onChangeSelectedLayers, onChangeSelectedStreamline, zoomLevel = 50, onChangeZoomLevel } = props;
@@ -42,95 +90,31 @@ function ToolBar(props: ToolBarProps) {
 
   return (
     <div className={'absolute right-0 flex h-full w-16 select-none flex-col p-3'}>
-      <div className={'flex flex-col rounded-md bg-zinc-700 shadow-md shadow-zinc-900'}>
-        <button
-          onClick={() => handleOnClickLayer('grid')}
-          className={
-            'flex h-11 w-full flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-light'
-            + (selectedLayers.includes('grid') ? ' bg-orange' : ' bg-zinc-500')
-          }
+      {TOOLBAR_BUTTONS.map((buttonGroup, groupIndex) => (
+        <div
+          key={groupIndex}
+          className={`${ groupIndex > 0 ? 'mt-2' : '' } flex flex-col rounded-md bg-gray6 shadow-md shadow-zinc-900`}
         >
-          <Grid className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'격자'}</div>
-        </button>
-        <button
-          onClick={() => handleOnClickLayer('fish')}
-          className={
-            'flex h-11 w-full flex-col items-center justify-center rounded-b-md text-[11px] text-light'
-            + (selectedLayers.includes('fish') ? ' bg-orange' : ' bg-zinc-500')
-          }
-        >
-          <Fish className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'어획량'}</div>
-        </button>
-      </div>
-      <div className={'mt-2 flex flex-col rounded-md bg-zinc-700 shadow-md shadow-zinc-900'}>
-        <button onClick={() => handleOnClickStreamline('current')} className={
-          'flex h-11 w-full flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-light'
-          + (selectedStreamline.includes('current') ? ' bg-orange' : ' bg-zinc-500')
-        }
-        >
-          <WindArrowDown className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'해류'}</div>
-        </button>
-        <button onClick={() => handleOnClickLayer('sst')} className={
-          'flex h-11 w-full flex-col items-center justify-center border-b border-zinc-400 text-[11px] text-light'
-          + (selectedLayers.includes('sst') ? ' bg-orange' : ' bg-zinc-500')
-        }
-        >
-          <Thermometer className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'수온'}</div>
-        </button>
-        <button onClick={() => handleOnClickLayer('wave')} className={
-          'flex h-11 w-full flex-col items-center justify-center border-b border-zinc-400 text-[11px] text-light'
-          + (selectedLayers.includes('wave') ? ' bg-orange' : ' bg-zinc-500')
-        }
-        >
-          <Waves className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'파고'}</div>
-        </button>
-        <button onClick={() => handleOnClickLayer('ssh')} className={
-          'flex h-11 w-full flex-col items-center justify-center border-b border-zinc-400 text-[11px] text-light'
-          + (selectedLayers.includes('ssh') ? ' bg-orange' : ' bg-zinc-500')
-        }
-        >
-          <ArrowUpFromDot className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'수위'}</div>
-        </button>
-        <button onClick={() => handleOnClickLayer('chl')} className={
-          'flex h-11 w-full flex-col items-center justify-center rounded-b-md text-[9px] text-light'
-          + (selectedLayers.includes('chl') ? ' bg-orange' : ' bg-zinc-500')
-        }
-        >
-          <Leaf className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'클로로필'}</div>
-        </button>
-      </div>
-      {/* <div className={'mt-2 flex flex-col rounded-md bg-zinc-700 shadow-md shadow-zinc-900'}>
-        <button onClick={() => onChangeZoomLevel?.(zoomLevel >= 100 ? 100 : Number((zoomLevel + 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-t-md border-b border-zinc-400 text-[11px] text-zinc-50'}>
-          <Plus className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'확대'}</div>
-        </button>
-        <div className={'flex w-full cursor-pointer flex-col items-center justify-center border-b border-zinc-400 py-3'}>
-          <div
-            onMouseDown={() => setIsMouseDown(true)}
-            onMouseUp={() => setIsMouseDown(false)}
-            onMouseLeave={() => setIsMouseDown(false)}
-            onMouseMove={handleOnDragZoomLevel}
-            onClick={handleOnMouseClickZoomLevel}
-            className={'relative flex h-32 w-full'}
-          >
-            <div className={'absolute bottom-0 left-[calc(50%_-_0.125rem)] h-full w-1 rounded-full bg-zinc-500'} />
-            <div style={{ height: `${ 100 - (100 - zoomLevel) }%` }} className={'absolute bottom-0 left-[calc(50%_-_0.125rem)] h-full w-1 rounded-full bg-orange'} />
-            <div style={{ top: `${ 100 - zoomLevel }%` }} className={'absolute left-[calc(50%_-_0.6rem)] top-0 h-2 w-5 cursor-pointer rounded-full bg-zinc-200'} />
-          </div>
-          <div className={'mt-2 flex w-full select-none items-center justify-center text-[11px] font-bold text-zinc-50'}>{`${ zoomLevel }%`}</div>
+          {buttonGroup.map((button, index) => (
+            <ToolbarButton
+              key={button.id}
+              button={button}
+              isFirst={index === 0}
+              isLast={index === buttonGroup.length - 1}
+              isSelected={
+                button.type === 'layer'
+                  ? selectedLayers.includes(button.id)
+                  : selectedStreamline.includes(button.id)
+              }
+              onClick={() =>
+                button.type === 'layer'
+                  ? handleOnClickLayer(button.id)
+                  : handleOnClickStreamline(button.id)
+              }
+            />
+          ))}
         </div>
-        <button onClick={() => onChangeZoomLevel?.(zoomLevel <= 0 ? 0 : Number((zoomLevel - 10).toPrecision(1)))} className={'flex h-11 w-full select-none flex-col items-center justify-center rounded-b-md border-zinc-400 text-[11px] text-zinc-50'}>
-          <Minus className={'size-4'} />
-          <div className={'flex items-center justify-center'}>{'축소'}</div>
-        </button>
-      </div> */}
+      ))}
     </div>
   );
 }

@@ -72,6 +72,7 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
         <div className={'mb-2 mt-1 flex w-full justify-center'}>
           {payload && !error && !isLoading ? (
             <div className={'grid size-full grid-cols-[3rem_1fr] grid-rows-4 place-items-center border border-gray2 p-1'}>
+              <div className={'col-span-2 text-xs font-bold'}>{'예측정보'}</div>
               <div className={'text-[12px] font-bold text-gray6'}>{'어획량'}</div>
               <div className={'flex w-full items-center justify-start'}>
                 <svg className={'mr-1 size-3'} fill={getFishCatchColor(predictCatch)}>
@@ -79,7 +80,7 @@ function Overlay(props: NonNullable<OverlayProps['overlays']>[number] & { onClos
                 </svg>
                 <span style={{ color: getFishCatchColor(predictCatch) }}>
                   <span className={'font-bold'}>{predictCatch ?? '-'}</span>
-                  <span className={'text-gray6'}>{' ton'}</span>
+                  <span className={'text-gray6'}>{' kg'}</span>
                 </span>
               </div>
               <div className={'text-[12px] font-bold text-gray6'}>{'파고'}</div>
