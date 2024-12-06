@@ -95,6 +95,11 @@ function ToolBar(props: ToolBarProps) {
     }
   };
 
+  const handleOnWheelZoomLevel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    onChangeZoomLevel?.(Math.min(Math.max(processedZoomLevel - (e.deltaY / 100), 0), 100));
+  };
+
   return (
     <div className={'absolute right-0 flex h-full w-16 select-none flex-col p-3'}>
       {toolbarButtons.map((buttonGroup, groupIndex) => (
@@ -134,6 +139,7 @@ function ToolBar(props: ToolBarProps) {
             onMouseUp={() => setIsMouseDown(false)}
             onMouseLeave={() => setIsMouseDown(false)}
             onMouseMove={handleOnDragZoomLevel}
+            onWheel={handleOnWheelZoomLevel}
             onClick={handleOnMouseClickZoomLevel}
             className={'relative flex h-32 w-full'}
           >
