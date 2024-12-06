@@ -99,18 +99,21 @@ function CesiumMap(props: CesiumMapProps) {
   );
 
   const heightToZoomLevel = (height: number) => {
-    return Number(((100 - ((height - 50010) / (3450000 - 50010) * 100)).toPrecision(2)));
+    return Number(((100 - ((height - 27000) / (3500000 - 27000) * 100))).toFixed(10));
   };
 
   const zoomLevelToHeight = (zoomLevel: number) => {
-    return ((100 - zoomLevel) * (3450000 - 50010) / 100) + 50010;
+    return ((100 - zoomLevel) * (3500000 - 27000) / 100) + 27000;
   };
 
   const setZoomWithForce = (height: number) => {
     if (!viewer.current) return;
     const { longitude, latitude } = viewer.current.camera.positionCartographic;
+    const lon = Cesium.Math.toDegrees(longitude);
+    const lat = Cesium.Math.toDegrees(latitude);
     viewer.current.camera.setView({
-      destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height), // 경도, 위도, 높이
+      destination: Cesium.Cartesian3.fromDegrees(lon, lat, height), // 경도, 위도, 높이
+      endTransform: Cesium.Matrix4.IDENTITY,
     });
   };
 
@@ -144,6 +147,11 @@ function CesiumMap(props: CesiumMapProps) {
   }, [streamlineLayers]);
 
   React.useEffect(() => {
+    if (!viewer.current) return;
+    setZoomWithForce(zoomLevelToHeight(zoomLevel));
+  }, [zoomLevel]);
+
+  React.useEffect(() => {
     console.log('overlay & zoom effect');
 
     const overlayIds = overlays.map((ol) => ol.id);
@@ -157,8 +165,6 @@ function CesiumMap(props: CesiumMapProps) {
       if (!viewer.current) return;
       if (viewer.current.entities.getById(id)) return;
 
-      console.log(viewer.current.entities.values.map((x) => x.id));
-
       viewer.current.entities.add({
         ...entityOptions, ...entity,
         id,
@@ -168,12 +174,9 @@ function CesiumMap(props: CesiumMapProps) {
 
     const postRenderListener = () => {
       if (!viewer.current) return;
-
-      console.log(heightToZoomLevel(viewer.current.camera.positionCartographic.height));
-      // setZoomWithForce(zoomLevelToHeight(zoomLevel));
-      // if (zoomLevel !== heightToZoomLevel(viewer.current.camera.positionCartographic.height)) {
-      //   onZoomLevelChange?.(heightToZoomLevel(viewer.current.camera.positionCartographic.height));
-      // }
+      if (zoomLevel !== heightToZoomLevel(viewer.current.camera.positionCartographic.height)) {
+        onZoomLevelChange?.(heightToZoomLevel(viewer.current.camera.positionCartographic.height));
+      }
 
       overlays.map(({ id, position: { lon, lat } }) => {
         if (!viewer.current) return;
