@@ -188,7 +188,7 @@ function Reanalysis(props: ReanalysisProps) {
         <>
           <div className={'mt-2 flex h-8 w-full items-center justify-start pl-1 text-[14px] font-bold'}>{'과거 관측 재분석 자료'}</div>
           <Chart height={200} type={'line'} options={chartOptions} data={chartData} />
-          <div className={'flex w-full items-center justify-end pr-4 text-[11px] font-bold text-gray5'}>{'단위: 100만 톤'}</div>
+          <div className={'flex w-full items-center justify-end pr-4 text-[11px] font-bold text-gray5'}>{'단위: 100만 kg'}</div>
           <div className={'mt-2 flex h-8 w-full items-center justify-start pl-1 text-[14px] font-bold'}>{dayjs(reanalysisQuery.analysDate).format('YYYY년 MM월') + ' 최대 어획량 예측 지점 순위'}</div>
           {
             locations?.map((l, index) => (
@@ -198,7 +198,7 @@ function Reanalysis(props: ReanalysisProps) {
                     <Award className={`size-5 stroke-none ${ index === 0 ? 'fill-yellow-500' : index === 1 ? 'fill-zinc-400' : index === 2 ? 'fill-amber-700' : 'fill-gray2' }`} />
                     <span className={'text-bold text-base text-main'}>
                       {`${ l.totalCatch.toFixed(1) }`}
-                      <span className={'text-sm text-gray7'}>{' 톤'}</span>
+                      <span className={'text-sm text-gray7'}>{' kg'}</span>
                     </span>
                   </div>
                   <div className={'mr-2 flex items-center justify-center'}>
