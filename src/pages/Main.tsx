@@ -28,6 +28,7 @@ interface ReanalysisQuery {
 interface DailyFishProps {
   maxFishQuery: MaxFishQuery
   setMaxFishQuery: React.Dispatch<React.SetStateAction<MaxFishQuery>>
+  onClickPoint?: (position: { lon?: number, lat?: number })=> void
 }
 
 const speciesOptions = [
@@ -38,7 +39,7 @@ const speciesOptions = [
 ];
 
 function DailyFish(props: DailyFishProps) {
-  const { maxFishQuery, setMaxFishQuery } = props;
+  const { maxFishQuery, setMaxFishQuery, onClickPoint } = props;
   const { data: maxFishInfo, error, isLoading } = fishInfoApi.endpoints.getMaxFishPointInfo.useQuery(maxFishQuery);
   const { payload } = maxFishInfo ?? {};
 
@@ -97,8 +98,13 @@ function DailyFish(props: DailyFishProps) {
       {maxFishInfo && !error && !isLoading ? (
         <>
           <div className={'my-2'}>
-            <div className={'flex h-8 w-full items-center justify-start pl-1 text-[14px] font-bold'}>
+            <div className={'flex h-8 w-full items-center justify-between pl-1 text-[14px] font-bold'}>
               {'예측 어획량 최대 지점'}
+              <button
+                onClick={() => onClickPoint?.({ lon: payload?.[0].lon, lat: payload?.[0].lat })}
+                className={'flex h-6 w-20 items-center justify-center rounded-md bg-gray-400 text-[12px] text-zinc-50'}
+              >{'지점 바로가기'}
+              </button>
             </div>
             <div className={'grid h-32 w-full grid-cols-[100px,_1fr] place-items-center gap-px border-y border-gray4 bg-zinc-300 text-[13px]'}>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'어종'}</div>
@@ -231,6 +237,7 @@ function Main() {
   const [selectedLayers, setSelectedLayers] = React.useState<string[]>(['grid', 'fish']);
   const [selectedStreamline, setSelectedStreamline] = React.useState<string[]>([]);
   const [zoomLevel, setZoomLevel] = React.useState(50);
+  const [focusedPosition, setFocusedPosition] = React.useState<'auto' | { lon: number, lat: number }>('auto');
 
   const timeList = React.useMemo(
     () => [0, 1, 2, 3].map((d) => dayjs(tab === 'dailyFish' ? maxFishQuery.analysDate : reanalysisQuery.analysDate).add(d, 'day').format('YYYY-MM-DD')),
@@ -275,7 +282,10 @@ function Main() {
             <button onClick={() => setTab('reanalysis')} className={'flex flex-1 items-center justify-center rounded-md text-[14px]' + (tab === 'reanalysis' ? ' bg-blue text-light' : ' bg-gray2 text-dark')}>{'과거 관측 재분석'}</button>
           </div>
         </div>
-        {tab === 'dailyFish' ? <DailyFish maxFishQuery={maxFishQuery} setMaxFishQuery={setMaxFishQuery} /> : <Reanalysis reanalysisQuery={reanalysisQuery} setReanalysisQuery={setReanalysisQuery} />}
+        {tab === 'dailyFish'
+          ? <DailyFish maxFishQuery={maxFishQuery} setMaxFishQuery={setMaxFishQuery} onClickPoint={({ lon, lat }) => lon && lat && setFocusedPosition({ lon, lat })} />
+          : <Reanalysis reanalysisQuery={reanalysisQuery} setReanalysisQuery={setReanalysisQuery} />
+        }
       </div>
       <div className={'relative flex size-full max-h-full min-w-[720px]'}>
         <CesiumMap
@@ -286,6 +296,8 @@ function Main() {
           onCloseOverlay={handleOnCloseOverlay}
           zoomLevel={zoomLevel}
           onZoomLevelChange={setZoomLevel}
+          focusedPostion={focusedPosition}
+          onRemoveFocusedPosition={() => setFocusedPosition('auto')}
         />
         <div className={'absolute bottom-0 flex h-14 w-full items-center justify-center px-[10%]'}>
           {React.useMemo(() => <PlayBar timeList={timeList} index={playbarIndex} onChange={handleOnChangePlayBar} />, [playbarIndex, timeList, handleOnChangePlayBar])}
