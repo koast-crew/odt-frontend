@@ -32,9 +32,14 @@ export default {
           'from': { opacity: '0', transform: 'translate(5px, -50%)' },
           'to': { opacity: '1', transform: 'translate(0, -50%)' },
         },
+        slideInFromTop: {
+          'from': { opacity: '0', transform: 'translateY(-5px)' },
+          'to': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         slideInFromRight: 'slideInFromRight 0.2s ease-in-out',
+        slideInFromTop: 'slideInFromTop 0.2s ease-in-out',
       },
     },
   },

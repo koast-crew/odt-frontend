@@ -8,9 +8,11 @@ import { Chart } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { fishInfoApi } from '@/api';
 import Spinner from '@/components/Spinner';
-import { FishSymbol, MapPin, Award } from 'lucide-react';
+import { FishSymbol, MapPin, Award, X } from 'lucide-react';
 import ToolBar from '@/components/map/ToolBar';
 import { makeWms } from '@/utils/makeWms';
+import Dropdown from '@/components/ui/Dropdown';
+import DateInput from '@/components/ui/DateInput';
 
 ChartJS.register(...registerables);
 
@@ -30,6 +32,26 @@ interface DailyFishProps {
   setMaxFishQuery: React.Dispatch<React.SetStateAction<MaxFishQuery>>
   onClickPoint?: (position: { lon?: number, lat?: number })=> void
 }
+
+interface ToolbarButton {
+  id: 'grid' | 'fish' | 'current' | 'sst' | 'wave' | 'ssh' | 'chl';
+  label: string;
+  type: 'layer' | 'streamline';
+}
+
+const toolbarButtons: ToolbarButton[][] = [
+  [
+    { id: 'grid', label: '격자', type: 'layer' },
+    { id: 'fish', label: '어획량', type: 'layer' },
+  ],
+  [
+    { id: 'current', label: '해류', type: 'streamline' },
+    { id: 'sst', label: '수온', type: 'layer' },
+    { id: 'wave', label: '파고', type: 'layer' },
+    { id: 'ssh', label: '수위', type: 'layer' },
+    { id: 'chl', label: '클로로필', type: 'layer' },
+  ],
+];
 
 const speciesOptions = [
   { value: 'squid', text: '살오징어', label: '살오징어 (금어기 4/1 ~ 5/31)' },
@@ -74,14 +96,18 @@ function DailyFish(props: DailyFishProps) {
     <>
       <div className={'my-2 grid w-full grid-cols-[75px,_1fr] grid-rows-3 place-items-center gap-1 rounded-lg border border-gray2 p-2 py-4'}>
         <label htmlFor={'daily-fish-species'} className={'justify-self-center text-[13px] font-bold'}>{'어종'}</label>
-        <select id={'daily-fish-species'} onChange={handleOnChangeFishSelect} className={'h-8 w-full border border-gray4 p-1 text-[13px]'}>
-          <option value={'squid'}>{'살오징어 (금어기 4/1 ~ 5/31)'}</option>
-          <option value={'cutlassfish'}>{'갈치 (금어기 7/1 ~ 7/31)'}</option>
-          <option value={'anchovy'}>{'멸치 (금어기 4/1 ~ 6/30)'}</option>
-          <option value={'mackerel'}>{'고등어 (금어기 4/1 ~ 4/30)'}</option>
-        </select>
+        <Dropdown
+          id={'daily-fish-species'}
+          options={speciesOptions}
+          value={maxFishQuery.species}
+          onChange={handleOnChangeFishSelect}
+        />
         <label htmlFor={'daily-fish-date'} className={'justify-self-center text-[13px] font-bold'}>{'날짜'}</label>
-        <input id={'daily-fish-date'} value={dayjs(maxFishQuery.analysDate).format('YYYY-MM-DD')} onChange={handleOnDateChange} type={'date'} className={'h-8 w-full border border-gray4 p-1 text-[13px]'} />
+        <DateInput
+          id={'daily-fish-date'}
+          value={maxFishQuery.analysDate}
+          onChange={handleOnDateChange}
+        />
         <div className={'justify-self-center text-[13px] font-bold'}>{'해역'}</div>
         <div className={'grid h-8 w-full grid-cols-3 place-items-center gap-1'}>
           <button onClick={() => handleOnSelectSea('west')} className={'h-6 w-full rounded-md text-[13px]' + (maxFishQuery.sea === 'west' ? ' bg-orange text-light' : ' bg-gray2 text-dark')}>
@@ -181,14 +207,18 @@ function Reanalysis(props: ReanalysisProps) {
     <>
       <div className={'my-2 grid w-full grid-cols-[75px,_1fr] grid-rows-2 place-items-center gap-1 rounded-lg border border-gray2 p-2 py-4'}>
         <label htmlFor={'reanalysis-species'} className={'justify-self-center text-[13px] font-bold'}>{'어종'}</label>
-        <select id={'reanalysis-species'} onChange={handleOnChangeFishSelect} className={'h-8 w-full border border-gray4 p-1 text-[13px]'}>
-          <option value={'squid'}>{'살오징어 (금어기 4/1 ~ 5/31)'}</option>
-          <option value={'cutlassfish'}>{'갈치 (금어기 7/1 ~ 7/31)'}</option>
-          <option value={'anchovy'}>{'멸치 (금어기 4/1 ~ 6/30)'}</option>
-          <option value={'mackerel'}>{'고등어 (금어기 4/1 ~ 4/30)'}</option>
-        </select>
+        <Dropdown
+          id={'reanalysis-species'}
+          options={speciesOptions}
+          value={reanalysisQuery.species}
+          onChange={handleOnChangeFishSelect}
+        />
         <label htmlFor={'reanalysis-date'} className={'justify-self-center text-[13px] font-bold'}>{'날짜'}</label>
-        <input id={'reanalysis-date'} value={dayjs(reanalysisQuery.analysDate).format('YYYY-MM-DD')} onChange={handleOnDateChange} type={'date'} className={'h-8 w-full border border-gray4 p-1 text-[13px]'} />
+        <DateInput
+          id={'reanalysis-date'}
+          value={reanalysisQuery.analysDate}
+          onChange={handleOnDateChange}
+        />
       </div>
       {data && !error && !isLoading ? (
         <>
@@ -228,6 +258,118 @@ function Reanalysis(props: ReanalysisProps) {
   );
 }
 
+const legendConst = {
+  fish: {
+    colors: [
+      '#B3E5FC',
+      '#81D4FA',
+      '#4FC3F7',
+      '#81C784',
+      '#66BB6A',
+      '#FFF176',
+      '#FFD54F',
+      '#FFB74D',
+      '#FF8A65',
+      '#F44336',
+      '#C62828',
+    ],
+    values: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '300~', ' '],
+    opacity: 0.8,
+  },
+  chl: {
+    colors: [
+      '#F7FCF5',
+      '#E5F5E0',
+      '#C7E9C0',
+      '#A1D99B',
+      '#74C476',
+      '#41AB5D',
+      '#238B45',
+      '#006D2C',
+      '#00441B',
+      '#002910',
+    ],
+    values: ['0.1', '0.2', '0.3', '1.0', '2.0', '3.0', '4.0', '6.0', '8.0', '10.0', '12.0'],
+    opacity: 0.7,
+  },
+  ssh: {
+    colors: [
+      '#006D6F',
+      '#2E8B8C',
+      '#5CAAAA',
+      '#8AC9C8',
+      '#B8E8E6',
+      '#E6D5E8',
+      '#D5B0D6',
+      '#C48BC4',
+      '#B366B2',
+      '#A141A1',
+    ],
+    values: ['-0.45', '-0.35', '-0.25', '-0.15', '-0.05', '0.05', '0.15', '0.25', '0.35', '0.45', '0.61'],
+    opacity: 0.7,
+  },
+  sst: {
+    colors: [
+      '#362B71',
+      '#3465A0',
+      '#68A8CE',
+      '#86C993',
+      '#C8DDA4',
+      '#F7DF89',
+      '#EB7F33',
+      '#E05B30',
+      '#BF363C',
+      '#981D22',
+    ],
+    values: ['0', '3', '6', '9', '12', '15', '18', '21', '24', '30', '35'],
+    opacity: 0.7,
+  },
+  wave: {
+    colors: [
+      '#FFFFFF',
+      '#E8E8E8',
+      '#D1D1D1',
+      '#BABABF',
+      '#A3A3AD',
+      '#8C8C9B',
+      '#757589',
+      '#5E5E77',
+      '#474765',
+      '#303053',
+    ],
+    values: ['0.0', '0.3', '1.0', '1.5', '2.0', '2.5', '3.0', '3.5', '4.0', '4.5', '5.2'],
+    opacity: 0.7,
+  },
+} as const;
+
+interface LegendBarProps {
+  lastSelected: string;
+}
+
+function LegendBar({ lastSelected }: LegendBarProps) {
+  return (
+    <>
+      <div className={'flex w-full px-[18px]'}>
+        {legendConst[lastSelected as keyof typeof legendConst]?.colors.map((color) => (
+          <span
+            key={color}
+            className={'size-4 w-9 first:rounded-l-full last:rounded-r-full'}
+            style={{
+              backgroundColor: color,
+              opacity: legendConst[lastSelected as keyof typeof legendConst].opacity,
+            }}
+          />
+        ))}
+      </div>
+      <div className={'flex w-full justify-between'}>
+        {legendConst[lastSelected as keyof typeof legendConst]?.values.map((value) => (
+          <span key={value} className={'w-9 text-center text-[12px]'}>{value}</span>
+        ))}
+      </div>
+    </>
+  );
+}
+
 function Main() {
   const [overlays, setOverlays] = React.useState<NonNullable<CesiumMapProps['overlays']>>([]);
   const [playbarIndex, setPlayBarIndex] = React.useState(0);
@@ -238,6 +380,8 @@ function Main() {
   const [selectedStreamline, setSelectedStreamline] = React.useState<string[]>([]);
   const [zoomLevel, setZoomLevel] = React.useState(50);
   const [focusedPosition, setFocusedPosition] = React.useState<'auto' | { lon: number, lat: number }>('auto');
+  const [legend, setLegend] = React.useState(true);
+  const [lastSelected, setLastSelected] = React.useState<string>('fish');
 
   const timeList = React.useMemo(
     () => [0, 1, 2, 3].map((d) => dayjs(tab === 'dailyFish' ? maxFishQuery.analysDate : reanalysisQuery.analysDate).add(d, 'day').format('YYYY-MM-DD')),
@@ -260,10 +404,25 @@ function Main() {
     });
   };
   const handleOnChangePlayBar = React.useCallback((index: number) => {setPlayBarIndex(index);}, []);
-  const handleOnChangeSelectedLayers = React.useCallback((layers: string[]) => {setSelectedLayers(layers);}, []);
+  const handleOnChangeSelectedLayers = React.useCallback((layers: string[]) => {
+    setSelectedLayers(layers);
+    if (layers.length > 0) {
+      setLegend(true);
+    }
+  }, []);
+  const handleOnChangeSelectedStreamline = React.useCallback((streamline: string[]) => {
+    setSelectedStreamline(streamline);
+    if (streamline.length > 0) {
+      setLegend(true);
+    }
+  }, []);
   const wmsLayers = React.useMemo(() => {
     return selectedLayers.map((layer) => makeWms(layer, timeList[playbarIndex], tab === 'dailyFish' ? maxFishQuery.species : reanalysisQuery.species));
   }, [playbarIndex, timeList, selectedLayers, maxFishQuery, reanalysisQuery, tab]);
+
+  const handleOnCloseLegend = React.useCallback(() => {
+    setLegend(false);
+  }, []);
 
   React.useEffect(() => {
     setOverlays((ol) => ol.map((item) => ({ ...item, time: timeList[playbarIndex] })));
@@ -299,16 +458,50 @@ function Main() {
           focusedPostion={focusedPosition}
           onRemoveFocusedPosition={() => setFocusedPosition('auto')}
         />
-        <div className={'absolute bottom-0 flex h-14 w-full items-center justify-center px-[10%]'}>
+        <div className={'absolute bottom-0 left-0 flex w-full items-end justify-between px-2.5'}>
           {React.useMemo(() => <PlayBar timeList={timeList} index={playbarIndex} onChange={handleOnChangePlayBar} />, [playbarIndex, timeList, handleOnChangePlayBar])}
+          {(selectedLayers.length > 0 || selectedStreamline.length > 0) && legend && (
+            <div className={'z-10 mb-9 flex h-auto w-[420px] flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-lg'}>
+              <div className={'flex h-8 w-full items-center justify-between font-bold'}>
+                <span>{'범례'}</span>
+                <button type={'button'} onClick={handleOnCloseLegend}>
+                  <X className={'size-4'} />
+                </button>
+              </div>
+              <div className={'flex flex-col gap-2 pt-2 text-sm'}>
+                <div className={'flex flex-wrap gap-2'}>
+                  {toolbarButtons.flat()
+                    // .filter((btn) => btn.id !== 'grid' && selectedLayers.includes(btn.id))
+                    .filter((btn) => btn.id !== 'grid' && btn.id !== 'current')
+                    .map((btn) => (
+                      <button
+                        key={btn.id}
+                        className={`flex items-center gap-1 rounded-full px-3 py-1 ${
+                          lastSelected === btn.id
+                            ? 'bg-orange text-white'
+                            : 'bg-gray1 text-dark'
+                        }`}
+                        onClick={() => setLastSelected(btn.id)}
+                      >
+                        <span>{btn.label}</span>
+                      </button>
+                    ))}
+                </div>
+                <div className={'mt-2 flex w-full flex-col gap-2'}>
+                  {legendConst[lastSelected as keyof typeof legendConst] && <LegendBar lastSelected={lastSelected} />}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <ToolBar
           selectedLayers={selectedLayers}
-          onChangeSelectedLayers={handleOnChangeSelectedLayers}
           selectedStreamline={selectedStreamline}
-          onChangeSelectedStreamline={setSelectedStreamline}
+          onChangeSelectedLayers={handleOnChangeSelectedLayers}
+          onChangeSelectedStreamline={handleOnChangeSelectedStreamline}
           zoomLevel={zoomLevel}
           onChangeZoomLevel={setZoomLevel}
+          onLastSelectedChange={setLastSelected}
         />
       </div>
     </>
