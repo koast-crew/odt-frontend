@@ -7,6 +7,8 @@ export interface MaxFishInfo {
   gridId: string
   latDms: string
   lonDms: string
+  lat: number
+  lon: number
   predictCatch: number
   species: string
   ssh: number

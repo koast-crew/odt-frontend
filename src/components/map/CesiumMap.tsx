@@ -15,6 +15,8 @@ export interface CesiumMapProps {
   onCloseOverlay?: (id: string)=> void
   zoomLevel?: number
   onZoomLevelChange?: (level: number)=> void
+  focusedPostion?: 'auto' | { lon: number, lat: number }
+  onRemoveFocusedPosition?: ()=> void
 }
 
 class CustomViewer extends Cesium.Viewer {
@@ -85,6 +87,8 @@ function CesiumMap(props: CesiumMapProps) {
     onCloseOverlay,
     zoomLevel = 50,
     onZoomLevelChange,
+    focusedPostion = 'auto',
+    onRemoveFocusedPosition,
   } = props;
   const viewer = React.useRef<CustomViewer>();
   const currentAnimation = React.useRef<CurrentAnimation>();
@@ -150,6 +154,17 @@ function CesiumMap(props: CesiumMapProps) {
     if (!viewer.current) return;
     setZoomWithForce(zoomLevelToHeight(zoomLevel));
   }, [zoomLevel]);
+
+  React.useEffect(() => {
+    if (!viewer.current) return;
+    if (focusedPostion === 'auto') return;
+    console.log(focusedPostion);
+    viewer.current.scene.camera.flyTo({ destination: Cesium.Cartesian3.fromDegrees(focusedPostion.lon, focusedPostion.lat, zoomLevelToHeight(90)), duration : 0.5 });
+
+    return () => {
+      onRemoveFocusedPosition?.();
+    };
+  }, [focusedPostion, zoomLevel, onRemoveFocusedPosition]);
 
   React.useEffect(() => {
     console.log('overlay & zoom effect');
