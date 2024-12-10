@@ -65,6 +65,15 @@ function DailyFish(props: DailyFishProps) {
   const { data: maxFishInfo, error, isLoading } = fishInfoApi.endpoints.getMaxFishPointInfo.useQuery(maxFishQuery);
   const { payload } = maxFishInfo ?? {};
 
+  const {
+    species,
+    analysDate,
+    gridId,
+    latDms,
+    lonDms,
+    predictCatch,
+  } = payload?.[0] ?? {};
+
   const maxFishTableContent = React.useMemo(() => payload ? [
     payload.map((mfi) => [dayjs(mfi.analysDate).format('MM-DD')]),
     payload.map((mfi) => [mfi.predictCatch]),
@@ -121,7 +130,7 @@ function DailyFish(props: DailyFishProps) {
           </button>
         </div>
       </div>
-      {maxFishInfo && !error && !isLoading ? (
+      {maxFishInfo && !error && !isLoading && payload?.length ? (
         <>
           <div className={'my-2'}>
             <div className={'flex h-8 w-full items-center justify-between pl-1 text-[14px] font-bold'}>
@@ -134,20 +143,20 @@ function DailyFish(props: DailyFishProps) {
             </div>
             <div className={'grid h-32 w-full grid-cols-[100px,_1fr] place-items-center gap-px border-y border-gray4 bg-zinc-300 text-[13px]'}>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'어종'}</div>
-              <div className={'flex size-full items-center justify-center bg-white'}>{speciesOptions.find((so) => so.value === maxFishInfo?.payload?.[0].species)?.text}</div>
+              <div className={'flex size-full items-center justify-center bg-white'}>{speciesOptions.find((so) => so.value === species)?.text}</div>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'날짜'}</div>
-              <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload?.[0].analysDate}</div>
+              <div className={'flex size-full items-center justify-center bg-white'}>{analysDate}</div>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'격자 아이디'}</div>
-              <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload?.[0].gridId}</div>
+              <div className={'flex size-full items-center justify-center bg-white'}>{gridId}</div>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'위경도'}</div>
-              <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload?.[0].latDms}{', '}{maxFishInfo?.payload?.[0].lonDms}</div>
+              <div className={'flex size-full items-center justify-center bg-white'}>{latDms}{', '}{lonDms}</div>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'예측 어획량'}</div>
-              <div className={'flex size-full items-center justify-center bg-white'}>{maxFishInfo?.payload?.[0].predictCatch}</div>
+              <div className={'flex size-full items-center justify-center bg-white'}>{predictCatch}</div>
             </div>
           </div>
           <span className={'flex h-8 w-full items-center justify-between px-1 text-[14px] font-bold'}>
             <span className={'mr-1'}>{'향후 3일 예측'}</span>
-            <span className={'text-xs text-gray7'}>{' [지점: '}{maxFishInfo?.payload?.[0].gridId}{']'}</span>
+            <span className={'text-xs text-gray7'}>{' [지점: '}{gridId}{']'}</span>
           </span>
           {maxFishTable}
         </>
@@ -373,7 +382,7 @@ function LegendBar({ lastSelected }: LegendBarProps) {
 function Main() {
   const [overlays, setOverlays] = React.useState<NonNullable<CesiumMapProps['overlays']>>([]);
   const [playbarIndex, setPlayBarIndex] = React.useState(0);
-  const [maxFishQuery, setMaxFishQuery] = React.useState({ species: 'squid', analysDate: dayjs().format('YYYYMMDD'), sea: 'west' });
+  const [maxFishQuery, setMaxFishQuery] = React.useState({ species: 'squid', analysDate: dayjs().format('YYYYMMDD'), sea: 'east' });
   const [reanalysisQuery, setReanalysisQuery] = React.useState({ species: 'squid', analysDate: dayjs().format('YYYYMMDD') });
   const [tab, setTab] = React.useState<'dailyFish' | 'reanalysis'>('dailyFish');
   const [selectedLayers, setSelectedLayers] = React.useState<string[]>(['grid', 'fish']);
@@ -424,6 +433,19 @@ function Main() {
     setLegend(false);
   }, []);
 
+  const handleOnClickPoint = ({ lon, lat }: { lon?: number, lat?: number }) => {
+    if (!(lon && lat)) return;
+    setFocusedPosition({ lon, lat });
+    setOverlays((ol) => {
+      return [...ol, {
+        id: `overlay_${ (Number(ol.at(-1)?.id.replace('overlay_', '') ?? 0)) + 1 }`,
+        position: { lon, lat },
+        time: timeList[playbarIndex],
+        species: tab === 'dailyFish' ? maxFishQuery.species : reanalysisQuery.species,
+      }];
+    });
+  };
+
   React.useEffect(() => {
     setOverlays((ol) => ol.map((item) => ({ ...item, time: timeList[playbarIndex] })));
   }, [timeList, playbarIndex]);
@@ -442,7 +464,7 @@ function Main() {
           </div>
         </div>
         {tab === 'dailyFish'
-          ? <DailyFish maxFishQuery={maxFishQuery} setMaxFishQuery={setMaxFishQuery} onClickPoint={({ lon, lat }) => lon && lat && setFocusedPosition({ lon, lat })} />
+          ? <DailyFish maxFishQuery={maxFishQuery} setMaxFishQuery={setMaxFishQuery} onClickPoint={handleOnClickPoint} />
           : <Reanalysis reanalysisQuery={reanalysisQuery} setReanalysisQuery={setReanalysisQuery} />
         }
       </div>
