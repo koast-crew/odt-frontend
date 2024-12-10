@@ -31,7 +31,6 @@ export default tseslint.config(
       'no-multi-spaces': 'error',
       'comma-spacing': ['error', { before: false, after: true }],
       'quotes': ['error', 'single'],
-      'indent': ['error', 2],
       'arrow-spacing': ['error', { before: true, after: true }],
       'react-refresh/only-export-components': [
         'warn',
