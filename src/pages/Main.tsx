@@ -11,6 +11,8 @@ import Spinner from '@/components/Spinner';
 import { FishSymbol, MapPin, Award } from 'lucide-react';
 import ToolBar from '@/components/map/ToolBar';
 import { makeWms } from '@/utils/makeWms';
+import Dropdown from '@/components/ui/Dropdown';
+import DateInput from '@/components/ui/DateInput';
 
 ChartJS.register(...registerables);
 
@@ -73,14 +75,18 @@ function DailyFish(props: DailyFishProps) {
     <>
       <div className={'my-2 grid w-full grid-cols-[75px,_1fr] grid-rows-3 place-items-center gap-1 rounded-lg border border-gray2 p-2 py-4'}>
         <label htmlFor={'daily-fish-species'} className={'justify-self-center text-[13px] font-bold'}>{'어종'}</label>
-        <select id={'daily-fish-species'} onChange={handleOnChangeFishSelect} className={'h-8 w-full border border-gray4 p-1 text-[13px]'}>
-          <option value={'squid'}>{'살오징어 (금어기 4/1 ~ 5/31)'}</option>
-          <option value={'cutlassfish'}>{'갈치 (금어기 7/1 ~ 7/31)'}</option>
-          <option value={'anchovy'}>{'멸치 (금어기 4/1 ~ 6/30)'}</option>
-          <option value={'mackerel'}>{'고등어 (금어기 4/1 ~ 4/30)'}</option>
-        </select>
+        <Dropdown
+          id={'daily-fish-species'}
+          options={speciesOptions}
+          value={maxFishQuery.species}
+          onChange={handleOnChangeFishSelect}
+        />
         <label htmlFor={'daily-fish-date'} className={'justify-self-center text-[13px] font-bold'}>{'날짜'}</label>
-        <input id={'daily-fish-date'} value={dayjs(maxFishQuery.analysDate).format('YYYY-MM-DD')} onChange={handleOnDateChange} type={'date'} className={'h-8 w-full border border-gray4 p-1 text-[13px]'} />
+        <DateInput
+          id={'daily-fish-date'}
+          value={maxFishQuery.analysDate}
+          onChange={handleOnDateChange}
+        />
         <div className={'justify-self-center text-[13px] font-bold'}>{'해역'}</div>
         <div className={'grid h-8 w-full grid-cols-3 place-items-center gap-1'}>
           <button onClick={() => handleOnSelectSea('west')} className={'h-6 w-full rounded-md text-[13px]' + (maxFishQuery.sea === 'west' ? ' bg-orange text-light' : ' bg-gray2 text-dark')}>
@@ -175,14 +181,18 @@ function Reanalysis(props: ReanalysisProps) {
     <>
       <div className={'my-2 grid w-full grid-cols-[75px,_1fr] grid-rows-2 place-items-center gap-1 rounded-lg border border-gray2 p-2 py-4'}>
         <label htmlFor={'reanalysis-species'} className={'justify-self-center text-[13px] font-bold'}>{'어종'}</label>
-        <select id={'reanalysis-species'} onChange={handleOnChangeFishSelect} className={'h-8 w-full border border-gray4 p-1 text-[13px]'}>
-          <option value={'squid'}>{'살오징어 (금어기 4/1 ~ 5/31)'}</option>
-          <option value={'cutlassfish'}>{'갈치 (금어기 7/1 ~ 7/31)'}</option>
-          <option value={'anchovy'}>{'멸치 (금어기 4/1 ~ 6/30)'}</option>
-          <option value={'mackerel'}>{'고등어 (금어기 4/1 ~ 4/30)'}</option>
-        </select>
+        <Dropdown
+          id={'reanalysis-species'}
+          options={speciesOptions}
+          value={reanalysisQuery.species}
+          onChange={handleOnChangeFishSelect}
+        />
         <label htmlFor={'reanalysis-date'} className={'justify-self-center text-[13px] font-bold'}>{'날짜'}</label>
-        <input id={'reanalysis-date'} value={dayjs(reanalysisQuery.analysDate).format('YYYY-MM-DD')} onChange={handleOnDateChange} type={'date'} className={'h-8 w-full border border-gray4 p-1 text-[13px]'} />
+        <DateInput
+          id={'reanalysis-date'}
+          value={reanalysisQuery.analysDate}
+          onChange={handleOnDateChange}
+        />
       </div>
       {data && !error && !isLoading ? (
         <>
