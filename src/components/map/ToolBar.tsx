@@ -8,23 +8,14 @@ export interface ToolBarProps {
   onChangeSelectedStreamline?: (layers: string[])=> void
   zoomLevel?: number
   onChangeZoomLevel?: (level: number)=> void
+  onLastSelectedChange?: (id: string)=> void
 }
 
 interface ToolbarButton {
-  id: keyof typeof icons;
+  id: 'grid' | 'fish' | 'current' | 'sst' | 'wave' | 'ssh' | 'chl';
   label: string;
   type: 'layer' | 'streamline';
 }
-
-const icons = {
-  grid: <Grid className={'size-4'} />,
-  fish: <FishSymbol className={'size-4'} />,
-  current: <WindArrowDown className={'size-4'} />,
-  sst: <Thermometer className={'size-4'} />,
-  wave: <Waves className={'size-4'} />,
-  ssh: <ArrowUpFromDot className={'size-4'} />,
-  chl: <Leaf className={'size-4'} />,
-};
 
 const toolbarButtons: ToolbarButton[][] = [
   [
@@ -93,7 +84,7 @@ const ToolbarButton = ({
 const sliderOffset = 10;
 
 function ToolBar(props: ToolBarProps) {
-  const { selectedLayers, selectedStreamline = [], onChangeSelectedLayers, onChangeSelectedStreamline, zoomLevel = 50, onChangeZoomLevel } = props;
+  const { selectedLayers, selectedStreamline = [], onChangeSelectedLayers, onChangeSelectedStreamline, zoomLevel = 50, onChangeZoomLevel, onLastSelectedChange } = props;
   const [isMouseDown, setIsMouseDown] = React.useState(false);
   const sliderRef = React.useRef<HTMLDivElement>(null);
 
@@ -101,10 +92,17 @@ function ToolBar(props: ToolBarProps) {
 
   const handleOnClickLayer = (layer: string) => {
     onChangeSelectedLayers(selectedLayers.includes(layer) ? selectedLayers.filter((l) => l !== layer) : [...selectedLayers, layer]);
+    if (layer !== 'grid') {
+      onLastSelectedChange?.(layer);
+    }
   };
 
   const handleOnClickStreamline = (layer: string) => {
     onChangeSelectedStreamline?.(selectedStreamline.includes(layer) ? selectedStreamline.filter((l) => l !== layer) : [...selectedStreamline, layer]);
+    // if current가 아닐 때
+    if (layer !== 'current') {
+      onLastSelectedChange?.(layer);
+    }
   };
 
   const handleOnMouseClickZoomLevel = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -132,6 +130,27 @@ function ToolBar(props: ToolBarProps) {
     onChangeZoomLevel?.(Math.min(Math.max(processedZoomLevel - (e.deltaY / 100), 0), 100));
   };
 
+  const getIconByType = (id: string) => {
+    switch (id) {
+      case 'grid':
+        return <Grid className={'size-4'} />;
+      case 'fish':
+        return <FishSymbol className={'size-4'} />;
+      case 'current':
+        return <WindArrowDown className={'size-4'} />;
+      case 'sst':
+        return <Thermometer className={'size-4'} />;
+      case 'wave':
+        return <Waves className={'size-4'} />;
+      case 'ssh':
+        return <ArrowUpFromDot className={'size-4'} />;
+      case 'chl':
+        return <Leaf className={'size-4'} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={'absolute right-0 flex h-full w-16 select-none flex-col p-3'}>
       {toolbarButtons.map((buttonGroup, groupIndex) => (
@@ -157,7 +176,7 @@ function ToolBar(props: ToolBarProps) {
                     : handleOnClickStreamline(button.id)
                 }
               >
-                {icons[button.id]}
+                {getIconByType(button.id)}
               </ToolbarButton>
             );
           })}
