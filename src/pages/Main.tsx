@@ -1,57 +1,30 @@
 import React from 'react';
+import Spinner from '@/components/Spinner';
+import LeftHeaderTable from '@/components/LeftHeaderTable';
+import Dropdown from '@/components/ui/Dropdown';
+import DateInput from '@/components/ui/DateInput';
+import PlayBar from '@/components/map/PlayBar';
+import ToolBar from '@/components/map/ToolBar';
+import MapLegend from '@/components/map/MapLegend';
+import dayjs from 'dayjs';
 import { Viewer } from 'cesium';
 import CesiumMap, { CesiumMapProps } from '@/components/map/CesiumMap';
-import PlayBar from '@/components/map/PlayBar';
-import LeftHeaderTable from '@/components/LeftHeaderTable';
-import dayjs from 'dayjs';
 import { Chart } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { fishInfoApi } from '@/api';
-import Spinner from '@/components/Spinner';
-import { FishSymbol, MapPin, Award, X } from 'lucide-react';
-import ToolBar from '@/components/map/ToolBar';
+import { FishSymbol, MapPin, Award } from 'lucide-react';
 import { makeWms } from '@/utils/makeWms';
-import Dropdown from '@/components/ui/Dropdown';
-import DateInput from '@/components/ui/DateInput';
+import { legendConst } from '@/utils/consts/mapLegend';
+import { MaxFishQuery, ReanalysisQuery } from '@/pages/types';
+import { toolbarButtons } from '@/utils/consts/Toolbar';
 
 ChartJS.register(...registerables);
-
-interface MaxFishQuery {
-  species: string
-  analysDate: string
-  sea: string
-}
-
-interface ReanalysisQuery {
-  species: string
-  analysDate: string
-}
 
 interface DailyFishProps {
   maxFishQuery: MaxFishQuery
   setMaxFishQuery: React.Dispatch<React.SetStateAction<MaxFishQuery>>
   onClickPoint?: (position: { lon?: number, lat?: number })=> void
 }
-
-interface ToolbarButton {
-  id: 'grid' | 'fish' | 'current' | 'sst' | 'wave' | 'ssh' | 'chl';
-  label: string;
-  type: 'layer' | 'streamline';
-}
-
-const toolbarButtons: ToolbarButton[][] = [
-  [
-    { id: 'grid', label: '격자', type: 'layer' },
-    { id: 'fish', label: '어획량', type: 'layer' },
-  ],
-  [
-    { id: 'current', label: '해류', type: 'streamline' },
-    { id: 'sst', label: '수온', type: 'layer' },
-    { id: 'wave', label: '파고', type: 'layer' },
-    { id: 'ssh', label: '수위', type: 'layer' },
-    { id: 'chl', label: '클로로필', type: 'layer' },
-  ],
-];
 
 const speciesOptions = [
   { value: 'squid', text: '살오징어', label: '살오징어 (금어기 4/1 ~ 5/31)' },
@@ -267,118 +240,6 @@ function Reanalysis(props: ReanalysisProps) {
   );
 }
 
-const legendConst = {
-  fish: {
-    colors: [
-      '#B3E5FC',
-      '#81D4FA',
-      '#4FC3F7',
-      '#81C784',
-      '#66BB6A',
-      '#FFF176',
-      '#FFD54F',
-      '#FFB74D',
-      '#FF8A65',
-      '#F44336',
-      '#C62828',
-    ],
-    values: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '300~', ' '],
-    opacity: 0.8,
-  },
-  chl: {
-    colors: [
-      '#F7FCF5',
-      '#E5F5E0',
-      '#C7E9C0',
-      '#A1D99B',
-      '#74C476',
-      '#41AB5D',
-      '#238B45',
-      '#006D2C',
-      '#00441B',
-      '#002910',
-    ],
-    values: ['0.1', '0.2', '0.3', '1.0', '2.0', '3.0', '4.0', '6.0', '8.0', '10.0', '12.0'],
-    opacity: 0.7,
-  },
-  ssh: {
-    colors: [
-      '#006D6F',
-      '#2E8B8C',
-      '#5CAAAA',
-      '#8AC9C8',
-      '#B8E8E6',
-      '#E6D5E8',
-      '#D5B0D6',
-      '#C48BC4',
-      '#B366B2',
-      '#A141A1',
-    ],
-    values: ['-0.45', '-0.35', '-0.25', '-0.15', '-0.05', '0.05', '0.15', '0.25', '0.35', '0.45', '0.61'],
-    opacity: 0.7,
-  },
-  sst: {
-    colors: [
-      '#362B71',
-      '#3465A0',
-      '#68A8CE',
-      '#86C993',
-      '#C8DDA4',
-      '#F7DF89',
-      '#EB7F33',
-      '#E05B30',
-      '#BF363C',
-      '#981D22',
-    ],
-    values: ['0', '3', '6', '9', '12', '15', '18', '21', '24', '30', '35'],
-    opacity: 0.7,
-  },
-  wave: {
-    colors: [
-      '#FFFFFF',
-      '#E8E8E8',
-      '#D1D1D1',
-      '#BABABF',
-      '#A3A3AD',
-      '#8C8C9B',
-      '#757589',
-      '#5E5E77',
-      '#474765',
-      '#303053',
-    ],
-    values: ['0.0', '0.3', '1.0', '1.5', '2.0', '2.5', '3.0', '3.5', '4.0', '4.5', '5.2'],
-    opacity: 0.7,
-  },
-} as const;
-
-interface LegendBarProps {
-  lastSelected: string;
-}
-
-function LegendBar({ lastSelected }: LegendBarProps) {
-  return (
-    <>
-      <div className={'flex w-full px-[18px]'}>
-        {legendConst[lastSelected as keyof typeof legendConst]?.colors.map((color) => (
-          <span
-            key={color}
-            className={'size-4 w-9 first:rounded-l-full last:rounded-r-full'}
-            style={{
-              backgroundColor: color,
-              opacity: legendConst[lastSelected as keyof typeof legendConst].opacity,
-            }}
-          />
-        ))}
-      </div>
-      <div className={'flex w-full justify-between'}>
-        {legendConst[lastSelected as keyof typeof legendConst]?.values.map((value) => (
-          <span key={value} className={'w-9 text-center text-[12px]'}>{value}</span>
-        ))}
-      </div>
-    </>
-  );
-}
-
 function Main() {
   const [overlays, setOverlays] = React.useState<NonNullable<CesiumMapProps['overlays']>>([]);
   const [playbarIndex, setPlayBarIndex] = React.useState(0);
@@ -482,38 +343,15 @@ function Main() {
         />
         <div className={'absolute bottom-0 left-0 flex w-full items-end justify-between px-2.5'}>
           {React.useMemo(() => <PlayBar timeList={timeList} index={playbarIndex} onChange={handleOnChangePlayBar} />, [playbarIndex, timeList, handleOnChangePlayBar])}
-          {(selectedLayers.length > 0 || selectedStreamline.length > 0) && legend && (
-            <div className={'z-10 mb-9 flex h-auto w-[420px] flex-col justify-center rounded-lg bg-white px-3 py-2 shadow-lg'}>
-              <div className={'flex h-8 w-full items-center justify-between font-bold'}>
-                <span>{'범례'}</span>
-                <button type={'button'} onClick={handleOnCloseLegend}>
-                  <X className={'size-4'} />
-                </button>
-              </div>
-              <div className={'flex flex-col gap-2 pt-2 text-sm'}>
-                <div className={'flex flex-wrap gap-2'}>
-                  {toolbarButtons.flat()
-                    // .filter((btn) => btn.id !== 'grid' && selectedLayers.includes(btn.id))
-                    .filter((btn) => btn.id !== 'grid' && btn.id !== 'current')
-                    .map((btn) => (
-                      <button
-                        key={btn.id}
-                        className={`flex items-center gap-1 rounded-full px-3 py-1 ${
-                          lastSelected === btn.id
-                            ? 'bg-orange text-white'
-                            : 'bg-gray1 text-dark'
-                        }`}
-                        onClick={() => setLastSelected(btn.id)}
-                      >
-                        <span>{btn.label}</span>
-                      </button>
-                    ))}
-                </div>
-                <div className={'mt-2 flex w-full flex-col gap-2'}>
-                  {legendConst[lastSelected as keyof typeof legendConst] && <LegendBar lastSelected={lastSelected} />}
-                </div>
-              </div>
-            </div>
+          {(selectedLayers.length > 0 || selectedStreamline.length > 0) && (
+            <MapLegend
+              legend={legend}
+              onCloseLegend={handleOnCloseLegend}
+              lastSelected={lastSelected}
+              setLastSelected={setLastSelected}
+              toolbarButtons={toolbarButtons}
+              legendConst={legendConst}
+            />
           )}
         </div>
         <ToolBar

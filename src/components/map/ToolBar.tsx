@@ -1,35 +1,6 @@
 import React from 'react';
 import { Grid, FishSymbol, Thermometer, Waves, ArrowUpFromDot, Leaf, Plus, Minus, WindArrowDown } from 'lucide-react';
-
-export interface ToolBarProps {
-  selectedLayers: string[]
-  selectedStreamline?: string[]
-  onChangeSelectedLayers: (layers: string[])=> void
-  onChangeSelectedStreamline?: (layers: string[])=> void
-  zoomLevel?: number
-  onChangeZoomLevel?: (level: number)=> void
-  onLastSelectedChange?: (id: string)=> void
-}
-
-interface ToolbarButton {
-  id: 'grid' | 'fish' | 'current' | 'sst' | 'wave' | 'ssh' | 'chl';
-  label: string;
-  type: 'layer' | 'streamline';
-}
-
-const toolbarButtons: ToolbarButton[][] = [
-  [
-    { id: 'grid', label: '격자', type: 'layer' },
-    { id: 'fish', label: '어획량', type: 'layer' },
-  ],
-  [
-    { id: 'current', label: '해류', type: 'streamline' },
-    { id: 'sst', label: '수온', type: 'layer' },
-    { id: 'wave', label: '파고', type: 'layer' },
-    { id: 'ssh', label: '수위', type: 'layer' },
-    { id: 'chl', label: '클로로필', type: 'layer' },
-  ],
-];
+import { toolbarButtons } from '@/utils/consts/Toolbar';
 
 const Tooltip = ({
   label,
@@ -49,7 +20,7 @@ const Tooltip = ({
   );
 };
 
-const ToolbarButton = ({
+const ToolBarButton = ({
   children,
   label,
   isFirst,
@@ -82,6 +53,16 @@ const ToolbarButton = ({
 );
 
 const sliderOffset = 10;
+
+export interface ToolBarProps {
+  selectedLayers: string[]
+  selectedStreamline?: string[]
+  onChangeSelectedLayers: (layers: string[])=> void
+  onChangeSelectedStreamline?: (layers: string[])=> void
+  zoomLevel?: number
+  onChangeZoomLevel?: (level: number)=> void
+  onLastSelectedChange?: (id: string)=> void
+}
 
 function ToolBar(props: ToolBarProps) {
   const { selectedLayers, selectedStreamline = [], onChangeSelectedLayers, onChangeSelectedStreamline, zoomLevel = 50, onChangeZoomLevel, onLastSelectedChange } = props;
@@ -160,7 +141,7 @@ function ToolBar(props: ToolBarProps) {
         >
           {buttonGroup.map((button, index) => {
             return (
-              <ToolbarButton
+              <ToolBarButton
                 key={button.id}
                 label={button.label}
                 isFirst={index === 0}
@@ -177,7 +158,7 @@ function ToolBar(props: ToolBarProps) {
                 }
               >
                 {getIconByType(button.id)}
-              </ToolbarButton>
+              </ToolBarButton>
             );
           })}
         </div>
