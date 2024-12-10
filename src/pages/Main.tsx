@@ -297,9 +297,9 @@ function Main() {
   const handleOnClickPoint = ({ lon, lat }: { lon?: number, lat?: number }) => {
     if (!(lon && lat)) return;
     setFocusedPosition({ lon, lat });
-    setOverlays((ol) => {
-      return [...ol, {
-        id: `overlay_${ (Number(ol.at(-1)?.id.replace('overlay_', '') ?? 0)) + 1 }`,
+    setOverlays(() => {
+      return [{
+        id: 'overlay_0',
         position: { lon, lat },
         time: timeList[playbarIndex],
         species: tab === 'dailyFish' ? maxFishQuery.species : reanalysisQuery.species,
