@@ -313,7 +313,7 @@ function Main() {
 
   return (
     <>
-      <div className={'flex h-full w-[350px] flex-col p-4'}>
+      <div className={'z-50 flex h-full w-[350px] flex-col bg-white p-4'}>
         <div className={'grid grid-cols-[75px,_1fr] gap-1 py-1'}>
           <div className={'flex items-center gap-1'}>
             <FishSymbol className={'text-main'} width={'20'} height={'20'} />
@@ -341,7 +341,7 @@ function Main() {
           focusedPostion={focusedPosition}
           onRemoveFocusedPosition={() => setFocusedPosition('auto')}
         />
-        <div className={'absolute bottom-0 left-0 flex w-full items-end justify-between px-2.5'}>
+        <div className={'absolute bottom-0 left-0 z-50 flex w-full items-end justify-between px-2.5'}>
           {React.useMemo(() => <PlayBar timeList={timeList} index={playbarIndex} onChange={handleOnChangePlayBar} />, [playbarIndex, timeList, handleOnChangePlayBar])}
           {(selectedLayers.length > 0 || selectedStreamline.length > 0) && (
             <MapLegend
