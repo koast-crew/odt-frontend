@@ -12,7 +12,7 @@ export default class CustomReporter {
     console.log(chalk.black.bold('Running Tests...'));
   }
 
-  onTestResult(a, b, c) {
+  onTestResult(a, b) {
     // console.log(this.index === 9 && b);
     this.spinner.stop();
     if (b.numPassingTests === 0) {
@@ -25,17 +25,17 @@ export default class CustomReporter {
     this.spinner.start();
   }
 
-  onTestCaseResult(_, testCase) {
-    // console.log(testCase);
-    // this.spinner.stop();
-    // if (testCase.status === 'failed') {
-    //   console.log(chalk.white.bgRed.bold(' ' + testCase.title + ' '), chalk.red.bold('✖'));
-    //   this.allPassed = false;
-    // } else {
-    //   console.log(chalk.white.bgGreen.bold(' ' + testCase.title + ' '), chalk.green.bold('✔'));
-    // }
-    // this.spinner.start();
-  }
+  // onTestCaseResult(_, testCase) {
+  // console.log(testCase);
+  // this.spinner.stop();
+  // if (testCase.status === 'failed') {
+  //   console.log(chalk.white.bgRed.bold(' ' + testCase.title + ' '), chalk.red.bold('✖'));
+  //   this.allPassed = false;
+  // } else {
+  //   console.log(chalk.white.bgGreen.bold(' ' + testCase.title + ' '), chalk.green.bold('✔'));
+  // }
+  // this.spinner.start();
+  // }
 
   onRunComplete(_, results) {
     this.spinner.stop();
@@ -45,7 +45,7 @@ export default class CustomReporter {
       '|',
       chalk.white.bgRed.bold(' FAILED '),
       '|',
-      chalk.white.bgGreen.bold(' PASSED ')
+      chalk.white.bgGreen.bold(' PASSED '),
     );
     console.log('--------+----------+---------');
     console.log(
@@ -53,7 +53,7 @@ export default class CustomReporter {
       ' '.repeat(7 - Math.round(results.numTotalTestSuites / 10)) + '|',
       results.numFailedTestSuites,
       ' '.repeat(7 - Math.round(results.numFailedTestSuites / 10)) + '|',
-      results.numPassedTestSuites
+      results.numPassedTestSuites,
     );
 
     console.log('');
