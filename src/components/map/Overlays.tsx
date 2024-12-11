@@ -30,17 +30,17 @@ const convertDMS = (lon: number, lat: number) => {
 
 const getFishCatchColor = (value?: number | null) => {
   if (typeof value !== 'number') return '#3a3a3a';
-  if (value > 300) return '#a13030';
-  if (value > 90) return '#b84040';
-  if (value > 80) return '#e66000';
-  if (value > 70) return '#ff7f1a';
-  if (value > 60) return '#ff9233';
-  if (value > 50) return '#6b8a55';
-  if (value > 40) return '#7fa065';
-  if (value > 30) return '#94b575';
-  if (value > 20) return '#4c8cff';
-  if (value > 10) return '#66a6ff';
-  if (value > 0) return '#a0d5f0';
+  if (value >= 300) return '#C62828';
+  if (value >= 90) return '#F44336';
+  if (value >= 80) return '#FF8A65';
+  if (value >= 70) return '#FFB74D';
+  if (value >= 60) return '#FFD54F';
+  if (value >= 50) return '#FFF176';
+  if (value >= 40) return '#66BB6A';
+  if (value >= 30) return '#81C784';
+  if (value >= 20) return '#4FC3F7';
+  if (value >= 10) return '#81D4FA';
+  if (value >= 0) return '#B3E5FC90';
   return '#3a3a3a';
 };
 
@@ -68,7 +68,7 @@ function DataRow({ label, value, unit }: PointData) {
             <circle cx={6} cy={6} r={6} />
           </svg>
         )}
-        <span style={label === '어획량' ? { color: getFishCatchColor(value) } : undefined}>
+        <span>
           <span>{label === '어획량' ? Math.round(value ?? 0) : formattedValue}</span>
           <span className={commonStyle.unit}>{unit}</span>
         </span>
