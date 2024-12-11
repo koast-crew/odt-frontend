@@ -12,7 +12,7 @@ import CesiumMap, { CesiumMapProps } from '@/components/map/CesiumMap';
 import { Chart } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { fishInfoApi } from '@/api';
-import { FishSymbol, MapPin, Award } from 'lucide-react';
+import { FishSymbol, MapPin, Award, Navigation } from 'lucide-react';
 import { makeWms } from '@/utils/makeWms';
 import { legendConst } from '@/utils/consts/mapLegend';
 import { MaxFishQuery, ReanalysisQuery } from '@/pages/types';
@@ -106,15 +106,17 @@ function DailyFish(props: DailyFishProps) {
       {maxFishInfo && !error && !isLoading && payload?.length ? (
         <>
           <div className={'my-2'}>
-            <div className={'flex h-8 w-full items-center justify-between pl-1 text-[14px] font-bold'}>
-              {'예측 어획량 최대 지점'}
+            <div className={'flex h-8 w-full items-center justify-between pl-1'}>
+              <span className={'text-[14px] font-bold'}>{'예측 어획량 최대 지점'}</span>
               <button
                 onClick={() => onClickPoint?.({ lon: payload?.[0].lon, lat: payload?.[0].lat })}
-                className={'flex h-6 w-20 items-center justify-center rounded-md bg-gray-400 text-[12px] text-zinc-50'}
-              >{'지점 바로가기'}
+                className={'flex items-center justify-center gap-1 rounded-md bg-gray2 px-1.5 py-0.5 text-[12px] text-dark'}
+              >
+                <Navigation className={'size-3'} />
+                <span className={'shrink-0'}>{'지점 바로가기'}</span>
               </button>
             </div>
-            <div className={'grid h-32 w-full grid-cols-[100px,_1fr] place-items-center gap-px border-y border-gray4 bg-zinc-300 text-[13px]'}>
+            <div className={'grid h-32 w-full grid-cols-[100px,_1fr] place-items-center gap-px border-y border-gray3 bg-zinc-300 text-[13px]'}>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'어종'}</div>
               <div className={'flex size-full items-center justify-center bg-white'}>{speciesOptions.find((so) => so.value === species)?.text}</div>
               <div className={'flex size-full items-center justify-center bg-zinc-100 font-bold'}>{'날짜'}</div>
