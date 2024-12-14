@@ -2,11 +2,13 @@ import React from 'react';
 import Checkbox from '@/components/ui/Checkbox';
 import Radio from '@/components/ui/Radio';
 import Toggle from '@/components/ui/Toggle';
+import Accordion from '@/components/ui/Accordion';
 
 function Main2DMap() {
   const [selectedCheckbox, setSelectedCheckbox] = React.useState<string[]>([]);
   const [selectedRadio, setSelectedRadio] = React.useState<string>('');
   const [isEnabled, setIsEnabled] = React.useState(false);
+  const [selectedId, setSelectedId] = React.useState<string>('');
 
   const checkboxOptions = [
     { value: 'option1', label: '옵션 1' },
@@ -19,6 +21,39 @@ function Main2DMap() {
     { value: 'option1', label: '옵션 1' },
     { value: 'option2', label: '옵션 2' },
     { value: 'option3', label: '옵션 3' },
+  ];
+
+  const accordionItems = [
+    {
+      id: '1',
+      label: '메뉴 1',
+      children: [
+        {
+          id: '1-1',
+          label: '하위 메뉴 1-1',
+          children: [
+            {
+              id: '1-1-1',
+              label: '하위 메뉴 1-1-1',
+            },
+          ],
+        },
+        {
+          id: '1-2',
+          label: '하위 메뉴 1-2',
+        },
+      ],
+    },
+    {
+      id: '2',
+      label: '메뉴 2',
+      children: [
+        {
+          id: '2-1',
+          label: '하위 메뉴 2-1',
+        },
+      ],
+    },
   ];
 
   const handleRadioChange = (value: string, checked: boolean) => {
@@ -64,10 +99,20 @@ function Main2DMap() {
         ))}
       </div>
       <div className={'mt-10 flex flex-col gap-2'}>
+        {'토글 컴포넌트\r'}
         <Toggle
           checked={isEnabled}
           onChange={setIsEnabled}
           color={'orange'}
+        />
+      </div>
+      <div className={'mt-10 flex flex-col gap-2'}>
+        <Accordion
+          items={accordionItems}
+          color={'blue'}
+          className={'w-64'}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
         />
       </div>
     </div>
