@@ -1,10 +1,12 @@
 import React from 'react';
 import Checkbox from '@/components/ui/Checkbox';
 import Radio from '@/components/ui/Radio';
+import Toggle from '@/components/ui/Toggle';
 
 function Main2DMap() {
   const [selectedCheckbox, setSelectedCheckbox] = React.useState<string[]>([]);
   const [selectedRadio, setSelectedRadio] = React.useState<string>('');
+  const [isEnabled, setIsEnabled] = React.useState(false);
 
   const checkboxOptions = [
     { value: 'option1', label: '옵션 1' },
@@ -47,12 +49,12 @@ function Main2DMap() {
           />
         ))}
       </div>
-      <div className={'flex flex-col gap-2'}>
+      <div className={'mt-10 flex flex-col gap-2'}>
         {'라디오 컴포넌트 선택된 값: '}{selectedRadio}
         {radioOptions.map((option) => (
           <Radio
             key={option.value}
-            name={'radio-group'} // 같은 그룹은 동일한 name을 사용
+            name={'radio-group'}
             value={option.value}
             label={option.label}
             checked={selectedRadio === option.value}
@@ -60,6 +62,13 @@ function Main2DMap() {
             onChange={(checked) => handleRadioChange(option.value, checked)}
           />
         ))}
+      </div>
+      <div className={'mt-10 flex flex-col gap-2'}>
+        <Toggle
+          checked={isEnabled}
+          onChange={setIsEnabled}
+          color={'orange'}
+        />
       </div>
     </div>
   );
