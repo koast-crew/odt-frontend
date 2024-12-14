@@ -6,6 +6,7 @@ import DateInput from '@/components/ui/DateInput';
 import PlayBar from '@/components/map/PlayBar';
 import ToolBar from '@/components/map/ToolBar';
 import MapLegend from '@/components/map/MapLegend';
+import Button from '@/components/ui/Button';
 import dayjs from 'dayjs';
 import { Viewer } from 'cesium';
 import CesiumMap, { CesiumMapProps } from '@/components/map/CesiumMap';
@@ -92,15 +93,33 @@ function DailyFish(props: DailyFishProps) {
         />
         <div className={'justify-self-center text-[13px] font-bold'}>{'해역'}</div>
         <div className={'grid h-8 w-full grid-cols-3 place-items-center gap-1'}>
-          <button onClick={() => handleOnSelectSea('west')} className={'h-6 w-full rounded-md text-[13px]' + (maxFishQuery.sea === 'west' ? ' bg-orange text-light' : ' bg-gray2 text-dark')}>
+          <Button
+            size={'sm'}
+            fullWidth
+            color={'orange'}
+            isSelected={maxFishQuery.sea === 'west'}
+            onClick={() => handleOnSelectSea('west')}
+          >
             {'서해'}
-          </button>
-          <button onClick={() => handleOnSelectSea('south')} className={'h-6 w-full rounded-md text-[13px]' + (maxFishQuery.sea === 'south' ? ' bg-orange text-light' : ' bg-gray2 text-dark')}>
+          </Button>
+          <Button
+            size={'sm'}
+            fullWidth
+            color={'orange'}
+            isSelected={maxFishQuery.sea === 'south'}
+            onClick={() => handleOnSelectSea('south')}
+          >
             {'남해'}
-          </button>
-          <button onClick={() => handleOnSelectSea('east')} className={'h-6 w-full rounded-md text-[13px]' + (maxFishQuery.sea === 'east' ? ' bg-orange text-light' : ' bg-gray2 text-dark')}>
+          </Button>
+          <Button
+            size={'sm'}
+            fullWidth
+            color={'orange'}
+            isSelected={maxFishQuery.sea === 'east'}
+            onClick={() => handleOnSelectSea('east')}
+          >
             {'동해'}
-          </button>
+          </Button>
         </div>
       </div>
       {maxFishInfo && !error && !isLoading && payload?.length ? (
@@ -322,8 +341,28 @@ function Main() {
             <span className={'shrink-0 font-bold text-main'}>{'어획량'}</span>
           </div>
           <div className={'flex h-8 w-full gap-0.5 rounded-lg border border-gray2 p-0.5'}>
-            <button onClick={() => setTab('dailyFish')} className={'flex flex-1 items-center justify-center rounded-md text-[14px]' + (tab === 'dailyFish' ? ' bg-blue text-light' : ' bg-gray2 text-dark')}>{'일별 예측(AI)'}</button>
-            <button onClick={() => setTab('reanalysis')} className={'flex flex-1 items-center justify-center rounded-md text-[14px]' + (tab === 'reanalysis' ? ' bg-blue text-light' : ' bg-gray2 text-dark')}>{'과거 관측 재분석'}</button>
+            <Button
+              size={'md'}
+              fullWidth
+              fullHeight
+              color={'blue'}
+              isSelected={tab === 'dailyFish'}
+              onClick={() => setTab('dailyFish')}
+            >
+              {'일별 예측(AI)'}
+            </Button>
+            <Button
+              size={'md'}
+              fullWidth
+              fullHeight
+              color={'blue'}
+              isSelected={tab === 'reanalysis'}
+              onClick={() => setTab('reanalysis')}
+            >
+              {'과거 관측 재분석'}
+            </Button>
+            {/* <button onClick={() => setTab('dailyFish')} className={'flex flex-1 items-center justify-center rounded-md text-[14px]' + (tab === 'dailyFish' ? ' bg-blue text-light' : ' bg-gray2 text-dark')}>{'일별 예측(AI)'}</button>
+            <button onClick={() => setTab('reanalysis')} className={'flex flex-1 items-center justify-center rounded-md text-[14px]' + (tab === 'reanalysis' ? ' bg-blue text-light' : ' bg-gray2 text-dark')}>{'과거 관측 재분석'}</button> */}
           </div>
         </div>
         {tab === 'dailyFish'
